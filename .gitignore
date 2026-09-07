@@ -1,0 +1,35 @@
+# ---- 环境变量与密钥（严禁提交）----
+.env
+.env.*
+!.env.example
+
+# ---- 数据库 / 运行数据 ----
+*.db
+*.sqlite
+*.sqlite3
+data/
+data/logs/
+data/history.db
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pip-cache/
+.tmp/
+*.egg-info/
+.pytest_cache/
+
+# ---- Node / 前端 ----
+node_modules/
+dist/
+.npm-cache/
+.vite/
+*.log
+
+# ---- IDE / 系统 ----
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
