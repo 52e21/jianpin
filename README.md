@@ -6,7 +6,7 @@ AI 驱动的智能招聘匹配系统：输入岗位 JD 与候选人简历，自�
 
 - 后端：FastAPI + DeepSeek + SQLite（解析/匹配纯规则零 LLM，面试题与待定结论按需调 LLM）
 - 前端：React 19 + Vite 7 + TanStack Router + Tailwind CSS 4（秒悟设计，蓝/橙主色调）
-- 端口：后端 8002 · 前端 3015
+- 端口：后端 8002 · 前端 **3016**（注：3015 归同机的晴天企服项目，勿占用）
 
 ## 功能
 
@@ -47,7 +47,7 @@ python -m venv .venv
 ```powershell
 cd frontend
 npm install
-npm run dev   # http://localhost:3015
+npm run dev   # http://localhost:3016
 ```
 
 ## 目录结构
