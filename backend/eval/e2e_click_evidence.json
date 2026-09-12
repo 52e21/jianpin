@@ -1,0 +1,34 @@
+{
+  "steps": [
+    "落地页 title=简聘",
+    "已进入 /match",
+    "textarea 字数=[318,420]",
+    "已进入 /result",
+    "analyze 返回 task_id=tk_d6c22cceed9b 结论=推荐",
+    "点击后是否产生新的 /api/ 调用: true",
+    "页面出现「已记录：采纳」: true"
+  ],
+  "apiCalls": [
+    "OPTIONS http://127.0.0.1:8015/api/agent/analyze → 200",
+    "POST http://127.0.0.1:8015/api/agent/analyze → 200",
+    "OPTIONS http://127.0.0.1:8015/api/agent/feedback → 200",
+    "POST http://127.0.0.1:8015/api/agent/feedback → 200"
+  ],
+  "ok": true,
+  "error": null,
+  "task_id": "tk_d6c22cceed9b",
+  "conclusion": "推荐",
+  "cache_hit": false,
+  "ui_success": true,
+  "feedback_response": {
+    "message": "已记录",
+    "task_id": "tk_d6c22cceed9b",
+    "action": "采纳",
+    "new_conclusion": "",
+    "original_conclusion": "推荐",
+    "feedback_at": "2026-09-12T21:41:04"
+  },
+  "console_errors": [
+    "console: Failed to load resource: the server responded with a status of 404 (File not found)"
+  ]
+}

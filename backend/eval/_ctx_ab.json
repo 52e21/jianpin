@@ -1,0 +1,290 @@
+{
+  "generated_at": "2026-09-12T20:35:41",
+  "cases": [
+    {
+      "id": "E048",
+      "input_chars": 2141,
+      "raw": {
+        "score": 100,
+        "conclusion": "推荐",
+        "prompt_tokens": 1461,
+        "completion_tokens": 1237,
+        "total_call_tokens": 2698,
+        "latency_ms": 8312.3,
+        "ctx_chars": 0,
+        "n_questions": 5,
+        "req_covered": 1,
+        "req_total": 1,
+        "miss_covered": 0,
+        "miss_total": 0,
+        "questions": [
+          "你简历中提到精通 Java 与 MySQL。在核心系统开发中，数据库往往是性能瓶颈。请结合你过去的一个项目，具体说明你是如何定位和优化一条慢 SQL 的？最终性能提升了多少？",
+          "岗位强调核心系统开发与性能优化。假设你负责的一个 Java 核心接口在流量高峰期出现响应时间飙升、CPU 飙高，你会如何系统性地排查和解决？请描述你的完整思路。",
+          "你只有 3 年经验，但岗位要求负责核心系统开发。请介绍一个你参与过的、你认为最复杂的项目，重点说明：你负责的模块、遇到的最大技术挑战、以及你个人的具体贡献。",
+          "在 Java 核心系统开发中，并发编程是常见需求。请结合你的经验，说明你如何使用线程池？如果线上线程池出现任务堆积，你会如何排查和调整？",
+          "核心系统开发往往需要和产品、测试、运维等多方协作。请举一个你与其他角色产生技术分歧的例子，你是如何沟通并推动问题解决的？"
+        ]
+      },
+      "structured": {
+        "score": 100,
+        "conclusion": "推荐",
+        "prompt_tokens": 345,
+        "completion_tokens": 1118,
+        "total_call_tokens": 1463,
+        "latency_ms": 6806.7,
+        "ctx_chars": 148,
+        "n_questions": 5,
+        "req_covered": 1,
+        "req_total": 1,
+        "miss_covered": 0,
+        "miss_total": 0,
+        "questions": [
+          "你提到精通 Java，请结合 JVM 内存模型说明：一个对象从创建到被回收，大致经历哪些内存区域？在什么情况下对象会进入老年代？如果线上服务频繁 Full GC，你会如何排查和优化？",
+          "在 Java 并发编程中，volatile、synchronized 和 ReentrantLock 都能解决可见性或互斥问题。请说明它们的关键区别、底层实现原理，以及在一个高并发计数场景中你会如何选型？",
+          "你简历中提到精通 Java 与 MySQL。请挑一个你负责过的核心项目，说明其中 MySQL 表结构设计、索引设计和慢 SQL 优化的具体做法。你当时做了哪些取舍？最终效果如何？",
+          "请结合你 3 年 Java 开发经历，讲一个你遇到过的线上问题或复杂技术难题。你当时如何定位、如何决策、如何上线修复？如果重来一次，你会怎么改进？",
+          "在团队协作中，如果你和同事在技术方案上产生分歧，例如他坚持用某个你认为有风险的实现方式，你会如何处理？请结合真实经历说明。"
+        ]
+      },
+      "prompt_token_drop_pct": 76.4
+    },
+    {
+      "id": "E049",
+      "input_chars": 3513,
+      "raw": {
+        "score": 100,
+        "conclusion": "推荐",
+        "prompt_tokens": 2298,
+        "completion_tokens": 1168,
+        "total_call_tokens": 3466,
+        "latency_ms": 7241.2,
+        "ctx_chars": 0,
+        "n_questions": 5,
+        "req_covered": 0,
+        "req_total": 1,
+        "miss_covered": 0,
+        "miss_total": 0,
+        "questions": [
+          "你简历中提到参与过多个高并发项目，并负责订单系统与支付系统的开发与维护。请具体说明一个你参与的高并发项目：当时的并发量级大概是多少？订单系统或支付系统中哪个环节最先成为瓶颈？你是如何定位并解决的？",
+          "在支付系统开发中，如何保证订单状态与支付结果的一致性？请结合你实际负责的模块，说明你如何处理支付回调、重复通知、超时未支付、退款等场景。",
+          "你简历中多次提到负责订单系统与支付系统的开发与维护。请选一个你深度参与的项目，说明你个人具体负责了哪些模块、解决了什么问题、最终业务指标或系统指标有什么提升？",
+          "订单系统和支付系统通常都要求高可用。请结合你的经验，说明如果支付服务突然出现大量超时，你会如何排查和止损？在架构上你会如何设计降级、限流和熔断策略？",
+          "你参与过多个高并发项目，订单和支付系统通常涉及产品、测试、运维、风控等多个团队。请举例说明一次跨团队协作中出现的分歧或紧急问题，你是如何推动解决的？"
+        ]
+      },
+      "structured": {
+        "score": 100,
+        "conclusion": "推荐",
+        "prompt_tokens": 439,
+        "completion_tokens": 1109,
+        "total_call_tokens": 1548,
+        "latency_ms": 6703.4,
+        "ctx_chars": 303,
+        "n_questions": 5,
+        "req_covered": 0,
+        "req_total": 1,
+        "miss_covered": 0,
+        "miss_total": 0,
+        "questions": [
+          "你在订单系统和支付系统中都处理过高并发场景。请具体说明：当订单创建接口在秒杀或大促期间瞬时流量激增时，你会从哪些层面做系统设计来保证稳定性和数据一致性？请结合你实际做过的方案，说明关键技术选型、取舍以及最终效果。",
+          "在支付系统开发中，数据一致性和幂等性非常关键。请结合你参与过的支付项目，说明你是如何设计支付回调、重复支付、订单状态同步等问题的？如果出现支付成功但订单状态未更新，你会如何排查和解决？",
+          "你提到参与过多个高并发项目，并负责订单系统和支付系统的开发与维护。请挑选一个你印象最深的项目，说明你当时具体负责哪一部分？遇到了什么技术难点？你是如何做技术选型和取舍的？最后结果如何？",
+          "在订单系统与支付系统的开发和维护中，你做过哪些性能优化或稳定性改进？请具体说明优化前后的指标变化，以及你当时为什么选择这种方案，而不是其他方案。",
+          "订单和支付系统通常涉及多个团队协作，例如前端、测试、运维、风控、财务等。请举一个你推动跨团队问题解决的例子，说明你当时如何沟通、如何推动、遇到分歧时如何取舍，以及最终结果。"
+        ]
+      },
+      "prompt_token_drop_pct": 80.9
+    },
+    {
+      "id": "E016",
+      "input_chars": 725,
+      "raw": {
+        "score": 95,
+        "conclusion": "推荐",
+        "prompt_tokens": 596,
+        "completion_tokens": 1289,
+        "total_call_tokens": 1885,
+        "latency_ms": 7605.4,
+        "ctx_chars": 0,
+        "n_questions": 5,
+        "req_covered": 3,
+        "req_total": 4,
+        "miss_covered": 0,
+        "miss_total": 0,
+        "questions": [
+          "你在电商平台核心系统中实现了 QPS 5000+ 的高并发订单处理，请具体说明这个系统的整体架构是怎样的？在订单创建、库存扣减、支付回调等关键链路上，你是如何保证数据一致性和系统稳定性的？",
+          "你提到使用 Redis 缓存优化查询性能，请具体说明在电商场景中你的缓存策略是怎样的？比如缓存穿透、缓存击穿、缓存雪崩分别是如何应对的？另外，Redis 与 MySQL 之间的数据一致性你是怎么保证的？",
+          "你在工作中使用过 Docker 和 Kubernetes 进行部署，请描述一下你们团队的 CI/CD 流程是怎样的？在 K8s 上部署 Spring Cloud 微服务时，你遇到过哪些问题，是如何解决的？比如服务发现、配置管理、滚动更新等方面。",
+          "你简历中提到有开源项目贡献经验，请具体介绍一下你贡献的项目是什么？你贡献了什么内容（代码、文档、issue 等）？在这个过程中你遇到了哪些技术挑战，是如何解决的？这段经历对你日常的开发工作有什么影响？",
+          "作为高级 Java 开发工程师，你需要指导初中级工程师。请举一个你带人或做技术分享的具体例子。你是如何帮助团队成员提升技术水平的？在这个过程中你遇到了什么困难，是如何解决的？"
+        ]
+      },
+      "structured": {
+        "score": 95,
+        "conclusion": "推荐",
+        "prompt_tokens": 457,
+        "completion_tokens": 1468,
+        "total_call_tokens": 1925,
+        "latency_ms": 9013.7,
+        "ctx_chars": 414,
+        "n_questions": 5,
+        "req_covered": 3,
+        "req_total": 4,
+        "miss_covered": 0,
+        "miss_total": 0,
+        "questions": [
+          "你在简历中提到使用 Redis 缓存优化查询性能，并支撑了 QPS 5000+ 的高并发订单处理。请具体说明：你们当时缓存了哪些数据？缓存粒度是如何设计的？在高并发场景下，如何解决缓存穿透、缓存击穿和缓存雪崩问题？另外，MySQL 与 Redis 之间的数据一致性是如何保证的？",
+          "你参与过基于 Spring Cloud 的微服务架构开发，也熟悉 Docker 和 Kubernetes 部署。请挑一个你深度参与的核心业务系统，说明：微服务是如何拆分的？服务之间如何通信？在 Kubernetes 上如何做服务发现、配置管理、滚动发布和故障自愈？遇到过哪些线上问题，你是如何定位和解决的？",
+          "在 Spring Boot 项目中，你如何设计一个高并发订单接口？请从 Controller、Service、MySQL 和 Redis 几个层面说明你的做法，包括事务控制、库存扣减、幂等性、限流和降级。",
+          "你提到有开源项目贡献经验。请具体说明：你贡献的是哪个项目？解决了什么问题？你的 PR 或 issue 是如何被维护者评审和合并的？在这个过程中你做了哪些技术取舍或沟通协调？",
+          "在核心业务系统开发中，你如何与产品、测试、运维以及其他后端同事协作？请举一个你推动跨团队问题解决的例子，说明你遇到了什么阻力、如何沟通、最终结果如何。"
+        ]
+      },
+      "prompt_token_drop_pct": 23.3
+    },
+    {
+      "id": "E001",
+      "input_chars": 53,
+      "raw": {
+        "score": 80,
+        "conclusion": "推荐",
+        "prompt_tokens": 269,
+        "completion_tokens": 969,
+        "total_call_tokens": 1238,
+        "latency_ms": 6426.9,
+        "ctx_chars": 0,
+        "n_questions": 5,
+        "req_covered": 3,
+        "req_total": 3,
+        "miss_covered": 1,
+        "miss_total": 1,
+        "questions": [
+          "你简历中提到精通Python与SQL，假设业务方给你一张千万级订单表，需要按用户维度计算近90天复购率，并输出每个渠道的复购率排名。请描述你会如何用SQL和Python配合完成，重点说明SQL中窗口函数或聚合的设计，以及Python在哪些环节介入。",
+          "你已有3年经验且精通Python与SQL，如果业务方反馈某次SQL查询结果与Python脚本计算结果不一致，你会如何排查？请结合你过去处理数据一致性问题的经历说明。",
+          "请挑一个你过去3年中最有代表性的数据分析项目，说明你如何从业务问题出发，用Python和SQL完成分析，并最终推动业务决策。你在其中遇到的最大挑战是什么？",
+          "作为数据分析师，你经常需要向非技术业务方解释复杂分析结果。请举例说明你如何把Python或SQL分析结论转化为业务方能理解并愿意采纳的建议。",
+          "岗位要求熟悉Python与SQL，你简历中也强调精通。请举例说明你如何用Python做数据清洗和特征处理，并如何用SQL验证清洗结果。"
+        ]
+      },
+      "structured": {
+        "score": 80,
+        "conclusion": "推荐",
+        "prompt_tokens": 269,
+        "completion_tokens": 1111,
+        "total_call_tokens": 1380,
+        "latency_ms": 6632.4,
+        "ctx_chars": 0,
+        "n_questions": 5,
+        "req_covered": 3,
+        "req_total": 3,
+        "miss_covered": 1,
+        "miss_total": 1,
+        "questions": [
+          "你简历中提到精通Python与SQL，并有3年数据分析经验。假设现在有一张日活千万级的用户行为表，需要计算每个用户最近7天的日均使用时长，但表中存在重复记录和缺失的时间戳。请描述你会如何用SQL和Python配合完成这个任务，并说明如何处理重复和缺失值。",
+          "你简历中强调精通Python，请举一个你用Python做过的最复杂的分析项目。在这个项目中，你是如何设计数据管道、选择库（如pandas、numpy、pyspark等）以及保证结果可复现的？",
+          "你简历中有3年经验，而岗位要求2年。请分享一个你主导或深度参与的数据分析项目，说明你如何从业务需求出发，用SQL和Python完成分析，并推动业务决策。",
+          "在数据分析工作中，你经常需要向非技术背景的业务方解释复杂的数据结论。请举一个你成功沟通的例子，说明你如何用SQL和Python的结果让业务方理解并采纳你的建议。",
+          "假设你需要优化一个现有SQL查询，该查询在千万级表上运行超过10分钟。请描述你会如何诊断性能瓶颈，并给出至少三种优化手段，同时说明如何用Python辅助验证优化效果。"
+        ]
+      },
+      "prompt_token_drop_pct": 0.0
+    },
+    {
+      "id": "E004",
+      "input_chars": 45,
+      "raw": {
+        "score": 67,
+        "conclusion": "待定",
+        "prompt_tokens": 263,
+        "completion_tokens": 1056,
+        "total_call_tokens": 1319,
+        "latency_ms": 6493.2,
+        "ctx_chars": 0,
+        "n_questions": 5,
+        "req_covered": 3,
+        "req_total": 3,
+        "miss_covered": 1,
+        "miss_total": 1,
+        "questions": [
+          "你简历中提到精通SQL。假设我们有一张用户订单表 orders（字段：order_id, user_id, order_date, amount, status），请写一个SQL查询，找出2024年每个月的GMV（仅统计status='completed'的订单），并计算月环比增长率。你会怎么写？",
+          "你简历中强调精通Python。在数据分析场景中，如果有一个1000万行的CSV文件需要做数据清洗和聚合分析，但内存只有8GB，你会如何用Python处理？请具体说明你使用的库和策略。",
+          "你有3年数据分析经验。请分享一个你主导过的、从数据中发现问题并推动业务决策的项目。重点说明：你如何定义分析问题、用了哪些Python/SQL技术、如何验证结论的可靠性、最终业务影响是什么？",
+          "在Python中，pandas的apply、map和applymap有什么区别？在处理大规模数据时，为什么推荐优先使用向量化操作而不是apply？请结合你实际工作中的例子说明。",
+          "作为数据分析师，你经常需要向非技术背景的业务方解释分析结论。请举例说明你如何向业务方解释一个复杂的统计概念（如置信区间、p值或相关性不等于因果），并确保他们能正确理解和使用你的结论？"
+        ]
+      },
+      "structured": {
+        "score": 67,
+        "conclusion": "推荐",
+        "prompt_tokens": 263,
+        "completion_tokens": 1110,
+        "total_call_tokens": 1373,
+        "latency_ms": 7367.1,
+        "ctx_chars": 0,
+        "n_questions": 5,
+        "req_covered": 3,
+        "req_total": 3,
+        "miss_covered": 1,
+        "miss_total": 1,
+        "questions": [
+          "你简历中提到精通Python与SQL。假设业务方需要你从一张包含上亿行订单记录的表中，按用户维度统计最近90天的复购率，并输出到一张结果表。请描述你会如何用SQL实现，并说明在Python中你会如何做结果校验或补充分析。",
+          "你提到精通Python与SQL。如果现在有一份用户行为日志数据，数据量很大且存在重复上报、时间戳乱序和部分字段缺失。你会如何设计数据清洗与特征计算流程？请重点说明Python和SQL各自承担什么角色。",
+          "请结合你过去3年中的一段数据分析项目，说明你是如何用Python和SQL解决一个具体业务问题的。重点讲清楚：业务目标是什么、你做了哪些分析、最终结果如何被业务方使用。",
+          "你简历中强调3年经验且精通Python与SQL。如果让你从0到1搭建一个核心业务指标体系，并配套自动化报表，你会如何推进？请结合你过去的项目经验说明。",
+          "在数据分析工作中，业务方经常提出模糊需求，例如“帮我看看最近为什么转化率下降了”。作为数据分析师，你会如何用Python和SQL配合，把这个问题拆解成可执行的分析任务，并推动结论落地？"
+        ]
+      },
+      "prompt_token_drop_pct": 0.0
+    },
+    {
+      "id": "E021",
+      "input_chars": 57,
+      "raw": {
+        "score": 0,
+        "conclusion": "不推荐",
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_call_tokens": 0,
+        "latency_ms": 0,
+        "ctx_chars": 0,
+        "n_questions": 0,
+        "req_covered": 0,
+        "req_total": 2,
+        "miss_covered": 0,
+        "miss_total": 2,
+        "questions": []
+      },
+      "structured": {
+        "score": 0,
+        "conclusion": "不推荐",
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_call_tokens": 0,
+        "latency_ms": 0,
+        "ctx_chars": 0,
+        "n_questions": 0,
+        "req_covered": 0,
+        "req_total": 2,
+        "miss_covered": 0,
+        "miss_total": 2,
+        "questions": []
+      },
+      "prompt_token_drop_pct": 0
+    }
+  ],
+  "summary": {
+    "prompt_tokens_raw_mean": 977.4,
+    "prompt_tokens_structured_mean": 354.6,
+    "prompt_token_drop_pct_all": 63.7,
+    "prompt_token_drop_pct_long_inputs_only": 60.2,
+    "total_call_tokens_raw_mean": 1767.7,
+    "total_call_tokens_structured_mean": 1281.5,
+    "total_token_drop_pct": 27.5,
+    "req_coverage_raw_total": 10,
+    "req_coverage_struct_total": 10,
+    "req_total": 14,
+    "miss_coverage_raw_total": 2,
+    "miss_coverage_struct_total": 2,
+    "miss_total": 4
+  }
+}

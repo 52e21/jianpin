@@ -1,0 +1,243 @@
+{
+  "report": {
+    "generated_at": "2026-09-12T20:30:01",
+    "eval_set": "eval_set_v1.jsonl",
+    "eval_set_size": 6,
+    "with_llm": true,
+    "elapsed_seconds": 39.2,
+    "conclusion_agreement": 0.5,
+    "conclusion_agreement_n": "3/6",
+    "confusion_gt_x_pred": {
+      "推荐": {
+        "推荐": 2,
+        "待定": 3
+      },
+      "不推荐": {
+        "不推荐": 1
+      }
+    },
+    "skill_all_strict": {
+      "precision": 0.75,
+      "recall": 0.9444,
+      "f1": 0.8286
+    },
+    "skill_all_loose": {
+      "precision": 0.75,
+      "recall": 0.9444,
+      "f1": 0.8286
+    },
+    "skill_required_strict": {
+      "precision": 0.7083,
+      "recall": 0.9167,
+      "f1": 0.7889
+    },
+    "avg_tokens": 1285.8,
+    "total_tokens": 7715,
+    "latency_ms_p50": 7462.9,
+    "latency_ms_p95": 9250.9,
+    "latency_ms_max": 9250.9,
+    "short_circuit_rate": 0.1667,
+    "cache_hits": 0,
+    "error_count": 0,
+    "errors": []
+  },
+  "cases": [
+    {
+      "id": "E001",
+      "ok": true,
+      "source": "history",
+      "error": "",
+      "latency_ms": 9250.892399999884,
+      "tokens": 1468,
+      "llm_calls": 1,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Python",
+        "SQL"
+      ],
+      "gt_all": [
+        "Python",
+        "SQL"
+      ],
+      "match_score": 80,
+      "needs_human_review": false
+    },
+    {
+      "id": "E002",
+      "ok": true,
+      "source": "history",
+      "error": "",
+      "latency_ms": 7462.91599999995,
+      "tokens": 1605,
+      "llm_calls": 2,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "React",
+        "TypeScript"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_required": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_all": [
+        "React",
+        "TypeScript"
+      ],
+      "match_score": 50,
+      "needs_human_review": false
+    },
+    {
+      "id": "E003",
+      "ok": true,
+      "source": "history",
+      "error": "",
+      "latency_ms": 0.2870000000712025,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "React",
+        "TypeScript"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_required": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_all": [
+        "React",
+        "TypeScript"
+      ],
+      "match_score": 0,
+      "needs_human_review": false
+    },
+    {
+      "id": "E004",
+      "ok": true,
+      "source": "history",
+      "error": "",
+      "latency_ms": 8339.830399999983,
+      "tokens": 1651,
+      "llm_calls": 2,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Python",
+        "SQL"
+      ],
+      "gt_all": [
+        "Python",
+        "SQL"
+      ],
+      "match_score": 67,
+      "needs_human_review": false
+    },
+    {
+      "id": "E005",
+      "ok": true,
+      "source": "history",
+      "error": "",
+      "latency_ms": 7690.226299999949,
+      "tokens": 1617,
+      "llm_calls": 2,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Python",
+        "SQL"
+      ],
+      "gt_all": [
+        "Python",
+        "SQL"
+      ],
+      "match_score": 67,
+      "needs_human_review": false
+    },
+    {
+      "id": "E006",
+      "ok": true,
+      "source": "history",
+      "error": "",
+      "latency_ms": 6446.71459999995,
+      "tokens": 1374,
+      "llm_calls": 1,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring",
+        "MySQL",
+        "Redis"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring",
+        "MySQL",
+        "Redis"
+      ],
+      "gt_required": [
+        "Spring Boot",
+        "MySQL"
+      ],
+      "gt_all": [
+        "Spring Boot",
+        "MySQL",
+        "Redis"
+      ],
+      "match_score": 85,
+      "needs_human_review": false
+    }
+  ]
+}
