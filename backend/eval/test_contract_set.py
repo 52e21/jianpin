@@ -34,6 +34,7 @@ def main():
     database.init_db()
     trace.set_enabled(False)
     database.save_history = lambda *a, **k: None     # 契约用例不落业务库
+    database.upsert_ask_session = lambda *a, **k: None   # A1/A4：测试不写追问会话状态
     client = TestClient(app)
 
     cases = [json.loads(l) for l in

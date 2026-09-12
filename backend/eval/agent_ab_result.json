@@ -1,0 +1,270 @@
+{
+  "set": "eval_set_v1_2.jsonl",
+  "before": {
+    "generated_at": "2026-09-12T23:25:55",
+    "eval_set": "eval_set_v1_2.jsonl",
+    "eval_set_size": 210,
+    "with_llm": false,
+    "elapsed_seconds": 0.9,
+    "conclusion_agreement": 0.8182,
+    "conclusion_agreement_n": "171/209",
+    "excluded_from_agreement": [
+      "E051"
+    ],
+    "excluded_note": "边界兜底用例（测的是接口层职责，见 contract_set_v1.jsonl），不计入一致率",
+    "confusion_gt_x_pred": {
+      "推荐": {
+        "推荐": 87,
+        "待定": 6,
+        "不推荐": 1
+      },
+      "不推荐": {
+        "不推荐": 22,
+        "待定": 26
+      },
+      "待定": {
+        "待定": 62,
+        "推荐": 4,
+        "不推荐": 1
+      }
+    },
+    "by_group": {
+      "hand": {
+        "label": "业务一致性（人工设计边界）",
+        "n": 43,
+        "agreement": 0.814,
+        "agreement_n": "35/43",
+        "skill_required_strict": {
+          "precision": 0.9017,
+          "recall": 0.9295,
+          "f1": 0.8989
+        },
+        "avg_tokens": 0.0,
+        "latency_ms_p95": 1.0
+      },
+      "real": {
+        "label": "业务一致性（真实输入/样本）",
+        "n": 26,
+        "agreement": 0.8077,
+        "agreement_n": "21/26",
+        "skill_required_strict": {
+          "precision": 0.8422,
+          "recall": 0.9278,
+          "f1": 0.8612
+        },
+        "avg_tokens": 0.0,
+        "latency_ms_p95": 1.7
+      },
+      "template": {
+        "label": "规范一致性（模板生成）",
+        "n": 140,
+        "agreement": 0.8214,
+        "agreement_n": "115/140",
+        "skill_required_strict": {
+          "precision": 0.6976,
+          "recall": 1.0,
+          "f1": 0.8186
+        },
+        "avg_tokens": 0.0,
+        "latency_ms_p95": 1.1
+      }
+    },
+    "skill_all_strict": {
+      "precision": 0.9107,
+      "recall": 0.9832,
+      "f1": 0.9391
+    },
+    "skill_all_loose": {
+      "precision": 0.9107,
+      "recall": 0.9832,
+      "f1": 0.9391
+    },
+    "skill_required_strict": {
+      "precision": 0.7498,
+      "recall": 0.9802,
+      "f1": 0.838
+    },
+    "avg_tokens": 0.0,
+    "total_tokens": 0,
+    "latency_ms_p50": 0.6,
+    "latency_ms_p95": 1.2,
+    "latency_ms_max": 739.0,
+    "short_circuit_rate": 1.0,
+    "cache_hits": 0,
+    "error_count": 0,
+    "errors": [],
+    "ask_branch": {
+      "n": 10,
+      "hit": 0,
+      "accuracy": 0.0,
+      "asked": 0,
+      "questions_total": 0,
+      "questions_min": 0,
+      "questions_max": 0,
+      "llm_calls": 0,
+      "conclusion_agreement_n": "9/10"
+    }
+  },
+  "after": {
+    "generated_at": "2026-09-12T23:25:56",
+    "eval_set": "eval_set_v1_2.jsonl",
+    "eval_set_size": 210,
+    "with_llm": false,
+    "elapsed_seconds": 1.0,
+    "conclusion_agreement": 0.823,
+    "conclusion_agreement_n": "172/209",
+    "excluded_from_agreement": [
+      "E051"
+    ],
+    "excluded_note": "边界兜底用例（测的是接口层职责，见 contract_set_v1.jsonl），不计入一致率",
+    "confusion_gt_x_pred": {
+      "推荐": {
+        "推荐": 87,
+        "待定": 6,
+        "不推荐": 1
+      },
+      "不推荐": {
+        "不推荐": 22,
+        "待定": 26
+      },
+      "待定": {
+        "待定": 63,
+        "推荐": 4
+      }
+    },
+    "by_group": {
+      "hand": {
+        "label": "业务一致性（人工设计边界）",
+        "n": 43,
+        "agreement": 0.814,
+        "agreement_n": "35/43",
+        "skill_required_strict": {
+          "precision": 0.9017,
+          "recall": 0.9295,
+          "f1": 0.8989
+        },
+        "avg_tokens": 0.0,
+        "latency_ms_p95": 4.0
+      },
+      "real": {
+        "label": "业务一致性（真实输入/样本）",
+        "n": 26,
+        "agreement": 0.8462,
+        "agreement_n": "22/26",
+        "skill_required_strict": {
+          "precision": 0.8422,
+          "recall": 0.9278,
+          "f1": 0.8612
+        },
+        "avg_tokens": 0.0,
+        "latency_ms_p95": 2.8
+      },
+      "template": {
+        "label": "规范一致性（模板生成）",
+        "n": 140,
+        "agreement": 0.8214,
+        "agreement_n": "115/140",
+        "skill_required_strict": {
+          "precision": 0.6976,
+          "recall": 1.0,
+          "f1": 0.8186
+        },
+        "avg_tokens": 0.0,
+        "latency_ms_p95": 1.9
+      }
+    },
+    "skill_all_strict": {
+      "precision": 0.9107,
+      "recall": 0.9832,
+      "f1": 0.9391
+    },
+    "skill_all_loose": {
+      "precision": 0.9107,
+      "recall": 0.9832,
+      "f1": 0.9391
+    },
+    "skill_required_strict": {
+      "precision": 0.7498,
+      "recall": 0.9802,
+      "f1": 0.838
+    },
+    "avg_tokens": 0.0,
+    "total_tokens": 0,
+    "latency_ms_p50": 1.6,
+    "latency_ms_p95": 2.5,
+    "latency_ms_max": 642.8,
+    "short_circuit_rate": 1.0,
+    "cache_hits": 0,
+    "error_count": 0,
+    "errors": [],
+    "ask_branch": {
+      "n": 10,
+      "hit": 10,
+      "accuracy": 1.0,
+      "asked": 10,
+      "questions_total": 20,
+      "questions_min": 2,
+      "questions_max": 2,
+      "llm_calls": 0,
+      "conclusion_agreement_n": "10/10"
+    }
+  },
+  "conclusion_diff": [
+    "E205"
+  ],
+  "status_diff": [
+    "E012",
+    "E017",
+    "E018",
+    "E019",
+    "E050",
+    "E051",
+    "E201",
+    "E202",
+    "E203",
+    "E204",
+    "E205",
+    "E206",
+    "E207",
+    "E208",
+    "E209",
+    "E210"
+  ],
+  "loop_sequence": [
+    [
+      "need_more_info",
+      1,
+      2,
+      0
+    ],
+    [
+      "need_more_info",
+      2,
+      2,
+      0
+    ],
+    [
+      "insufficient_final",
+      2,
+      0,
+      0
+    ]
+  ],
+  "improve": {
+    "before": {
+      "status": "need_more_info",
+      "conclusion": "待定",
+      "score": null,
+      "questions": [
+        "「后端工程师」这个岗位的必须技能有哪些？（例如语言、框架、中间件）",
+        "「后端工程师」这个岗位主要负责什么？（核心职责与业务方向）"
+      ]
+    },
+    "after": {
+      "status": "(正常返回)",
+      "conclusion": "推荐",
+      "score": 100,
+      "llm_calls": 1
+    }
+  }
+}

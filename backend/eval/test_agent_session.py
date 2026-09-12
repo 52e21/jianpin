@@ -67,17 +67,25 @@ def part_a(c):
 
 
 def part_b(c):
-    print("\n=== B. 同一 session 更新 + 不重置追问状态 ===")
+    print("\n=== B. 同一 session 更新 + round 不可被重置 + 充足后闭环 ===")
     database.upsert_ask_session(SID, round_no=1, status="insufficient",
                                pending_questions=["这个岗位需要几年经验？"], merged_jd="")
     analyze(c, SID, jd=JD2)
     d = c.get("/api/agent/session/%s" % SID).json()
     len_ok = d["jd_chars"] == len(JD2)
-    keep_ok = d["round"] == 1 and d["status"] == "insufficient" and d["pending_questions"]
+    round_ok = d["round"] == 1                       # round 只累积、绝不被普通请求重置
+    # A4 语义：本次 JD 信息充足 → 追问闭环（status=done、pending 清空）
+    closed_ok = d["status"] == "done" and d["pending_questions"] == []
     print("  JD 长度已更新: %s (%d -> %d)" % (len_ok, len(JD), d["jd_chars"]))
-    print("  round/status/pending 未被普通请求重置: %s (round=%s status=%s pending=%s)" % (
-        keep_ok, d["round"], d["status"], d["pending_questions"]))
-    ok = len_ok and keep_ok
+    print("  round 未被重置: %s (round=%s)" % (round_ok, d["round"]))
+    print("  充足后闭环: %s (status=%s pending=%s)" % (closed_ok, d["status"], d["pending_questions"]))
+    # 再发一次「信息不足」的 JD：round 应在 1 基础上累加为 2，而不是回退
+    analyze(c, SID, jd="招聘后端工程师")
+    d2 = c.get("/api/agent/session/%s" % SID).json()
+    acc_ok = d2["round"] == 2 and d2["status"] == "insufficient" and bool(d2["pending_questions"])
+    print("  再次不足 → round 累加: %s (round=%s status=%s pending=%d)" % (
+        acc_ok, d2["round"], d2["status"], len(d2["pending_questions"] or [])))
+    ok = len_ok and round_ok and closed_ok and acc_ok
     print("  B 结果: %s" % ("PASS" if ok else "FAIL"))
     return ok
 

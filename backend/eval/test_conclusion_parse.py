@@ -118,6 +118,7 @@ def part_b():
         config.DEEPSEEK_API_KEY = "fake-key-for-test"
         trace.set_enabled(False)
         database.save_history = lambda *a, **k: None
+        database.upsert_ask_session = lambda *a, **k: None   # A1/A4：测试不写追问会话状态
         stats = {"trace_id": "", "task_id": "", "llm_call_count": 0, "llm_used": False,
                  "total_tokens": 0, "prompt_tokens": 0, "completion_tokens": 0}
         # 分数落在 50–79 才会走 LLM 分支

@@ -149,6 +149,7 @@ def part_e():
 if __name__ == "__main__":
     database.init_db()
     database.save_history = lambda *a, **k: None
+    database.upsert_ask_session = lambda *a, **k: None   # A1/A4：测试不写追问会话状态
     a, b, c, d, e = part_a(), part_b(), part_c(), part_d(), part_e()
     print("\n总结果:", "全部通过 ✅" if all([a, b, c, d, e]) else "存在失败 ❌")
     sys.exit(0 if all([a, b, c, d, e]) else 1)

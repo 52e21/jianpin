@@ -227,6 +227,7 @@ if __name__ == "__main__":
 
     _trace.record = lambda *a, **k: None
     _database.save_history = lambda *a, **k: None
+    _database.upsert_ask_session = lambda *a, **k: None   # A1/A4：测试不写追问会话状态
 
     a, b, c, d, e, f, g = part_a(), part_b(), part_c(), part_d(), part_e(), part_f(), part_g()
     allok = all([a, b, c, d, e, f, g])

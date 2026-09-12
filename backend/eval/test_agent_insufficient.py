@@ -134,6 +134,7 @@ if __name__ == "__main__":
     database.init_db()
     _save, _record = database.save_history, trace.record
     database.save_history = lambda *a, **k: None
+    database.upsert_ask_session = lambda *a, **k: None   # A1/A4：测试不写追问会话状态
     trace.record = lambda *a, **k: None
     a = b = c_ = d = e = False
     try:

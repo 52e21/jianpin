@@ -135,6 +135,7 @@ def part_b():
 if __name__ == "__main__":
     database.init_db()
     database.save_history = lambda *a, **k: None     # 不污染业务库
+    database.upsert_ask_session = lambda *a, **k: None   # A1/A4：测试不写追问会话状态
     trace.set_enabled(False)                         # 不污染 trace 表
     original = install_fake()
     try:

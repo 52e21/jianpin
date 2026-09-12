@@ -101,6 +101,7 @@ def run(jd, resume, tag):
 def main():
     database.init_db()
     database.save_history = lambda *a, **k: None
+    database.upsert_ask_session = lambda *a, **k: None   # A1/A4：测试不写追问会话状态
     trace.set_enabled(False)
     ok = True
     results = []

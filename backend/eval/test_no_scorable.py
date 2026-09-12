@@ -12,6 +12,7 @@
 """
 import asyncio
 import json
+import os
 import sys
 from pathlib import Path
 
@@ -149,8 +150,14 @@ def part_d():
 
 
 if __name__ == "__main__":
+    # 本测试针对"JD 无可评分维度"这条路径（no_scorable → 待定 + 人工复核）。
+    # A4/A5 的追问分支会在更前面拦掉"信息不足"的 JD（本用例正是信息不足），
+    # 因此这里显式关闭分支，专测分支之后的原行为；分支行为由
+    # test_agent_insufficient / test_agent_ask_flow / agent_ab 覆盖。
+    os.environ["ASK_ENABLED"] = "0"
     database.init_db()
     database.save_history = lambda *a, **k: None
+    database.upsert_ask_session = lambda *a, **k: None   # A1/A4：测试不写追问会话状态
     a, b, c, d = part_a(), part_b(), part_c(), part_d()
     print("\n总结果:", "全部通过 ✅" if (a and b and c and d) else "存在失败 ❌")
     sys.exit(0 if (a and b and c and d) else 1)
