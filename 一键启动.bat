@@ -23,7 +23,7 @@ if %errorlevel%==0 (
     echo [OK]  Frontend is RUNNING  http://localhost:3016
 ) else (
     echo [..]  Frontend NOT running. Starting...
-    rem package.json 的 dev 脚本写死 --port 3015，这里用 npx vite 显式指定 3016，与上面的端口检查保持一致
+    rem 项目端口统一为 3016（package.json / vite.config.ts / 后端 CORS 均为 3016），这里显式指定以防配置漂移
     rem 本地启动固定把 API 地址指向本机后端，避免 frontend\.env 里过期的公网地址生效
     start "agent-frontend" cmd /c "cd /d %~dp0frontend && set VITE_API_BASE_URL=http://127.0.0.1:8002&& npx vite --port 3016 --host 0.0.0.0 --strictPort"
     echo [OK]  Frontend start command sent.
