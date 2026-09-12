@@ -1,4 +1,5 @@
 import json
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -29,6 +30,18 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="简聘 Agent", lifespan=lifespan)
 
+
+def _extra_origins() -> list:
+    """分享/部署时把当前公网地址追加进 CORS（逗号分隔）。
+
+    原来这里硬编码了某次 cpolar 隧道地址，隧道一重启就失效、且把过期公网地址写进了仓库；
+    改为环境变量注入：
+        EXTRA_CORS_ORIGINS=https://xxxx.cpolar.top,http://1.2.3.4:3016
+    """
+    raw = os.environ.get("EXTRA_CORS_ORIGINS", "")
+    return [u.strip().rstrip("/") for u in raw.split(",") if u.strip()]
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
@@ -36,9 +49,7 @@ app.add_middleware(
         "http://127.0.0.1:3015",
         "http://localhost:3016",
         "http://127.0.0.1:3016",
-        "http://4b24096f.r35.cpolar.top",
-        "https://4b24096f.r35.cpolar.top",
-    ],
+    ] + _extra_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

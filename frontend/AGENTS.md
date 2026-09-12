@@ -25,6 +25,8 @@
 | 用途 | 接口 |
 |---|---|
 | 结构化分析（结果页数据源） | `POST /api/agent/analyze` 返回 `{jd_parse, match_result, interview_questions, recommendation, llm_calls, total_tokens, cache_hit}` |
+| 追问分支（JD 信息不足时） | 同一个 `POST /api/agent/analyze`，返回 `{status: "need_more_info", ask: {questions, round, round_limit}}`（`match_result` 为 null、零 LLM）；HR 填写后带 `answers: [{question, answer}]` 重新请求**同一 session_id** |
+| 追问状态查询（可选） | `GET /api/agent/session/{session_id}` → `{round, status, pending_questions, ...}` |
 | 简历文件上传 | `POST /api/upload/resume`（PDF/DOCX，返回提取文本） |
 | 历史记录（分页） | `GET /api/agent/history?limit=&offset=` 返回 `{records, total}` |
 | 删除单条 | `DELETE /api/agent/history/{id}` |
@@ -35,7 +37,9 @@
 ## 页面路由（5 页）
 - `/` 首页：静态落地页，"开始匹配"跳 /match
 - `/match` 输入页：JD + 简历双文本区 + 文件上传 + "填入示例"（示例常量内联于 match.tsx）
-- `/result` 结果页：环形匹配度、五维得分、技能标签、面试题列表、推荐结论（绿/黄/红）；数据来自 analyze 响应并经 `sessionStorage("lastAnalyzeResult")` 持久化
+- `/result` 结果页：环形匹配度、五维得分、技能标签、面试题列表、推荐结论（绿/黄/红）；数据来自 analyze 响应并经 `sessionStorage("lastAnalyzeResult")` 持久化。
+  **当响应带 `status=need_more_info` 时改为渲染追问卡片**（此时没有 match_result，不能走打分渲染）；
+  追问续接所需的原始 JD/简历存于 `sessionStorage("lastAnalyzeInput")`（route state 优先）。
 - `/interview/$id` 面试题详情：展示题目、类别、难度、参考答案要点、评分标准（数据经路由 state 传入）
 - `/history` 历史记录：后端分页 + 本地搜索过滤 + 删除/清空（弹窗确认）
 
@@ -44,6 +48,7 @@
 - SkillTag/SkillTagGroup: 技能标签（必须/优先/命中/缺失）
 - ResultCard/StatusCard: 结果展示卡片（推荐绿/待定黄/不推荐红）
 - FileUpload: 文件上传组件（调后端提取）
+- AskCard: 追问卡片（JD 信息不足时展示 1–3 个问题 + 输入框 + "提交补充并重新匹配"）
 - Navbar/Footer: 布局组件
 
 ## 设计系统

@@ -148,7 +148,7 @@ function MatchPage() {
       }
       navigate({
         to: "/result",
-        state: { result: data, jd: jdText, resume: resumeText },
+        state: { result: data, jd: jdText, resume: resumeText, role },
       });
     } catch (err: any) {
       setError(err.message || "网络错误，请稍后重试");

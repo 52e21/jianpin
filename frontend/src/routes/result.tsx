@@ -5,6 +5,8 @@ import { CircularProgress } from "@/components/circular-progress";
 import { ResultCard, StatusCard } from "@/components/result-card";
 import { SkillTagGroup } from "@/components/skill-tag";
 import { FeedbackBar } from "@/components/feedback-bar";
+import { AskCard, type AskAnswer } from "@/components/ask-card";
+import { API_BASE, getSessionId } from "@/lib/api";
 import {
   Briefcase,
   Target,
@@ -73,6 +75,33 @@ export interface AnalyzeResult {
   /** 第 5/7 步新增：反馈接口按 task_id 定位本次分析 */
   task_id?: string;
   trace_id?: string;
+  /** A4/A5：追问分支的响应状态（need_more_info / insufficient_final）；正常分析无此字段 */
+  status?: string;
+  ask?: {
+    questions?: string[];
+    round?: number;
+    round_limit?: number;
+    reason?: string;
+    missing_fields?: string[];
+  };
+}
+
+/** A4：追问续接要带原始 JD/简历（route state 优先，刷新后从 sessionStorage 取回） */
+export const RESULT_INPUT_KEY = "lastAnalyzeInput";
+interface AnalyzeInput {
+  jd: string;
+  resume: string;
+  job_url?: string | null;
+  role?: "hr" | "candidate";
+}
+
+function readStoredInput(): AnalyzeInput | null {
+  try {
+    const stored = sessionStorage.getItem(RESULT_INPUT_KEY);
+    return stored ? (JSON.parse(stored) as AnalyzeInput) : null;
+  } catch {
+    return null;
+  }
 }
 
 // 结果持久化（跳详情页返回不丢失）
@@ -93,6 +122,58 @@ function ResultPage() {
   const location = useRouterState({ select: (s) => s.location });
   const routeData = (location.state as any)?.result as AnalyzeResult | null;
   const [data, setData] = useState<AnalyzeResult | null>(() => routeData || readStoredResult());
+
+  // A4：追问续接所需的原始输入（新匹配走 route state，刷新后用 sessionStorage）
+  const routeState = (location.state ?? null) as any;
+  const [input] = useState<AnalyzeInput | null>(() =>
+    routeState?.jd
+      ? { jd: routeState.jd, resume: routeState.resume ?? "", role: routeState.role }
+      : readStoredInput()
+  );
+  useEffect(() => {
+    if (input) {
+      try {
+        sessionStorage.setItem(RESULT_INPUT_KEY, JSON.stringify(input));
+      } catch {
+        /* 忽略存储失败 */
+      }
+    }
+  }, [input]);
+
+  // A4：把 HR 的补充回答提交回同一 session，后端合并进 JD 后重走 parse_jd 之后的链路
+  const [askSubmitting, setAskSubmitting] = useState(false);
+  const [askError, setAskError] = useState("");
+
+  const submitAnswers = async (answers: AskAnswer[]) => {
+    if (!input) {
+      setAskError("缺少原始 JD/简历，请返回输入页重新匹配");
+      return;
+    }
+    setAskSubmitting(true);
+    setAskError("");
+    try {
+      const resp = await fetch(`${API_BASE}/api/agent/analyze`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          jd: input.jd,
+          resume: input.resume,
+          job_url: input.job_url ?? null,
+          tenant_id: "default",
+          session_id: getSessionId(),
+          role: input.role ?? "hr",
+          answers,
+        }),
+      });
+      const body = (await resp.json().catch(() => ({}))) as AnalyzeResult & { detail?: string };
+      if (!resp.ok) throw new Error(body.detail || `请求失败（HTTP ${resp.status}）`);
+      setData(body);
+    } catch (err: any) {
+      setAskError(err?.message || "网络错误，请稍后重试");
+    } finally {
+      setAskSubmitting(false);
+    }
+  };
 
   // 有数据时写入 sessionStorage（新匹配覆盖旧数据；详情页返回用）
   useEffect(() => {
@@ -125,6 +206,46 @@ function ResultPage() {
         >
           去输入信息
         </button>
+      </div>
+    );
+  }
+
+  // ---- A4/A5：追问分支 ----
+  // 后端判定 JD 信息不足时会提前返回（此时**没有** match_result），
+  // 若继续走下面的打分渲染会因 mr.dimensions 为空而崩，所以这里先分流。
+  if (data.status === "need_more_info" || data.status === "insufficient_final") {
+    const isFinal = data.status === "insufficient_final";
+    return (
+      <div className="min-h-screen bg-background pb-20">
+        <div className="sticky top-16 z-40 bg-background/80 backdrop-blur-md border-b border-border/50">
+          <div className="container mx-auto px-4 py-4 max-w-3xl flex items-center gap-4">
+            <button
+              onClick={handleReset}
+              className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              返回输入
+            </button>
+            <div className="h-6 w-px bg-border" />
+            <h1 className="text-lg font-semibold text-foreground">
+              {isFinal ? "待人工复核" : "需要补充岗位信息"}
+            </h1>
+            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">零 LLM</span>
+          </div>
+        </div>
+        <main className="container mx-auto px-4 py-8 max-w-3xl space-y-6">
+          <AskCard
+            questions={data.ask?.questions ?? []}
+            round={data.ask?.round}
+            roundLimit={data.ask?.round_limit ?? 2}
+            reason={data.ask?.reason}
+            final={isFinal}
+            submitting={askSubmitting}
+            error={askError}
+            onSubmit={submitAnswers}
+            onBack={handleReset}
+          />
+        </main>
       </div>
     );
   }
