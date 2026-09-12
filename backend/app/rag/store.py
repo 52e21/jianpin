@@ -24,7 +24,11 @@ def get_client(db_dir: str | None = None):
         import chromadb  # 延迟导入（可选依赖）
         path = db_dir or DB_DIR
         os.makedirs(path, exist_ok=True)
-        _CLIENT = chromadb.PersistentClient(path=path)
+        try:  # 关掉匿名遥测：沙箱/内网环境不应发起外部上报
+            _CLIENT = chromadb.PersistentClient(
+                path=path, settings=chromadb.config.Settings(anonymized_telemetry=False))
+        except Exception:
+            _CLIENT = chromadb.PersistentClient(path=path)
     return _CLIENT
 
 
