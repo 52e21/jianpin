@@ -39,6 +39,16 @@ _result_cache: dict = {}
 # 第 6 步：输入短于这个字符数时，结构化上下文的固定开销大于原始文本，直接原样送
 CTX_MIN_CHARS = 200
 
+
+# R6：从 JD 解析结果取技能列表（必须 + 优先，去重），供只读检索注入面试题生成使用。
+def _jd_skills(jd_parse: dict) -> list:
+    sk = (jd_parse or {}).get("skills", {}) or {}
+    out: list = []
+    for s in list(sk.get("required", []) or []) + list(sk.get("preferred", []) or []):
+        if s and s not in out:
+            out.append(s)
+    return out
+
 # ---------------------------------------------------------------------------
 # 第 10 步：角色化结论文案
 # ---------------------------------------------------------------------------
@@ -248,7 +258,8 @@ async def run_agent(jd: str, resume: str, stats: Optional[dict] = None,
         # 第 6 步：SSE 旧链路同样改为结构化上下文注入（输出仍为纯文本列表）
         questions = await generate_interview_questions(
             jd, resume, stats,
-            context=build_interview_context(jd_result, match_result, resume))
+            context=build_interview_context(jd_result, match_result, resume),
+            rag_skills=_jd_skills(jd_result))
         # 修复（llm_calls 计数 bug）：与 analyze 链路一致，以节点回报的标志为准
         if stats.pop("questions_llm_called", False):
             stats["llm_call_count"] += 1
@@ -484,7 +495,8 @@ async def analyze_agent(jd: str, resume: str, job_url: str = "", ctx_mode: str =
         else:
             iv_context = None
         questions = await generate_interview_questions(jd, resume, stats, structured=True,
-                                                       context=iv_context)
+                                                       context=iv_context,
+                                                       rag_skills=_jd_skills(jd_parse))
         # 第 13 步：防空列表越界。
         # structured=True 时，若模型返回空内容，函数会返回 [] ——
         # 原实现紧接着访问 questions[0]，直接 IndexError，整个请求 500。

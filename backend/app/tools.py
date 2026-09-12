@@ -4,6 +4,7 @@
 - generate_interview_questions / summarize_recommendation：按需调用 LLM。
 """
 
+import os
 import re
 import time
 from functools import lru_cache
@@ -764,13 +765,18 @@ def build_interview_context(jd_parse: dict, match_result: dict, resume_text: str
 # 工具 3：generate_interview_questions —— 面试题生成（调 LLM）
 # ---------------------------------------------------------------------------
 async def generate_interview_questions(jd_text: str, resume_text: str, stats: dict = None,
-                                       structured: bool = False, context: str = None):
+                                       structured: bool = False, context: str = None,
+                                       rag_skills: list = None):
     """根据 JD + 简历生成 3-5 个针对性面试题。
 
     structured=False → 返回纯文本问题列表（SSE 用）
     structured=True  → 返回 [{"category","difficulty","question"}]（analyze 用）
     context          → 第 6 步新增：结构化上下文（由 build_interview_context 生成）。
                        传入时不再塞 JD/简历全文；为 None 时保持旧行为（向后兼容）。
+    rag_skills       → R6 新增：JD 解析出的技能列表。非空时做**只读检索**，把「岗位能力参考」
+                       块追加进 prompt；检索不可用/结果为空时完全走原路径（零影响）。
+                       约束：只注入面试题生成，**不注入 match_resume**（匹配打分必须可复现）。
+                       开关：环境变量 RAG_ENABLED=0 可整体关闭（用于 A/B 对比）。
     """
     from openai import AsyncOpenAI
 
@@ -838,11 +844,32 @@ async def generate_interview_questions(jd_text: str, resume_text: str, stats: di
     else:
         format_req = "只输出问题列表，每个问题一行，用 1. 2. 3. 编号，不要其它内容。"
 
+    # ---- R6：只读检索增强（岗位能力参考）----
+    # 设计：检索失败/为空 → rag_block 为空串 → prompt 与加 RAG 之前**逐字一致**（可安全降级）。
+    # 只在这里注入；match_resume / parse_jd 完全不碰（打分与判定必须可复现）。
+    rag_block = ""
+    if rag_skills and os.environ.get("RAG_ENABLED", "1") != "0":
+        try:
+            from .rag.inject import capability_context_for_skills
+
+            _rag = capability_context_for_skills(rag_skills)
+            rag_block = (_rag.get("text") or "").strip()
+            if stats is not None:
+                stats["rag_chars"] = _rag.get("chars", 0)
+                stats["rag_chunk_ids"] = list(_rag.get("ids") or [])
+                stats["rag_modes"] = list(_rag.get("modes") or [])
+        except Exception as _e:                     # 依赖缺失 / 模型不可用 / 索引异常
+            rag_block = ""
+            if stats is not None:
+                stats["rag_error"] = "%s: %s" % (type(_e).__name__, str(_e)[:80])
+    rag_section = (rag_block + "\n\n") if rag_block else ""
+
     prompt = (
         f"你是资深技术面试官。请根据{source_desc}生成 3-5 个有针对性、"
         "能考察候选人是否胜任的面试问题。\n"
         + extra_req
         + source_block + "\n\n"
+        + rag_section
         + format_req
     )
     resp = None                    # 用于判定"是否真的收到了模型响应"（= 计一次调用）

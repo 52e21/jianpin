@@ -140,23 +140,30 @@ class TfidfVectorStore:
         return store
 
 
-def get_searcher(chunks: Sequence[dict] | None = None, prefer: str = "auto"):
-    """返回可用检索后端；`prefer="chroma"` 时不回落。
+_SEARCHER = None
 
-    返回对象具备 `.name` 与 `.search(query_skills, top_k, where)`。
+
+def get_searcher(chunks: Sequence[dict] | None = None, prefer: str = "auto", force: bool = False):
+    """返回可用检索后端（**进程内单例**，避免每次请求都重新编码与重建索引）。
+
+    `prefer="chroma"` 时不回落。返回对象具备 `.name` 与 `.search(query_skills, top_k, where)`。
     优先 Chroma+bge（执行书选定方案）；依赖缺失时回落 TF-IDF 兜底并如实标注。
     """
+    global _SEARCHER
+    if _SEARCHER is not None and not force:
+        return _SEARCHER
     from .chunker import build_chunks
     chunks = build_chunks() if chunks is None else chunks
     if prefer in ("auto", "chroma"):
         try:
-            from .embedder import embed_chunks
-            from .store import index_chunks as chroma_index
-            from .store import search as chroma_search
             import chromadb  # noqa: F401
-            vecs = embed_chunks(chunks)
-            chroma_index(chunks, vecs, reset=True)
-            return _ChromaSearcher()
+            from .embedder import embed_chunks
+            from .store import get_collection, index_chunks as chroma_index
+            already = get_collection().count()          # 已建好索引就不重复编码/写入
+            if already != len(chunks):
+                chroma_index(chunks, embed_chunks(chunks), reset=True)
+            _SEARCHER = _ChromaSearcher()
+            return _SEARCHER
         except Exception as e:
             if prefer == "chroma":
                 raise
@@ -165,7 +172,8 @@ def get_searcher(chunks: Sequence[dict] | None = None, prefer: str = "auto"):
         reason = "prefer=%s" % prefer
     store = TfidfVectorStore()
     store.index_chunks(chunks)
-    return _FallbackSearcher(store, reason)
+    _SEARCHER = _FallbackSearcher(store, reason)
+    return _SEARCHER
 
 
 class _ChromaSearcher:

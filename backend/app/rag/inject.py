@@ -49,8 +49,13 @@ def format_capability_context(items: Sequence[dict]) -> str:
 def capability_context_for_skills(skills: Iterable[str],
                                   chunks: Sequence[dict] | None = None,
                                   vector_search=None,
-                                  top_k: int = MAX_ITEMS) -> dict:
-    """技能列表 → 混合检索 → 注入文本块（返回文本 + 诊断信息）。"""
+                                  top_k: int = MAX_ITEMS,
+                                  use_vector: bool = True) -> dict:
+    """技能列表 → 混合检索（向量+关键词→RRF）→ 注入文本块。
+
+    vector_search=None 且 use_vector=True 时，自动取当前可用的向量后端
+    （Chroma+bge 优先，缺失则兜底），取不到就退化为关键词 only。
+    """
     from .chunker import build_chunks
     from .retriever import hybrid_retrieve
 
@@ -58,6 +63,12 @@ def capability_context_for_skills(skills: Iterable[str],
     if not skills:
         return {"text": "", "ids": [], "modes": ["empty_query"], "chars": 0}
     chunks = build_chunks() if chunks is None else chunks
+    if vector_search is None and use_vector:
+        try:
+            from .fallback import get_searcher
+            vector_search = get_searcher(chunks).search
+        except Exception:
+            vector_search = None
     out = hybrid_retrieve(skills, chunks, vector_search=vector_search, final_k=top_k)
     text = format_capability_context(out["results"])
     return {
