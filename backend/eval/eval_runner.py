@@ -321,6 +321,8 @@ async def main_async(args):
 
     # ---- 禁止评测数据写业务库 / 写 Trace 表 ----
     database.save_history = lambda *a, **kw: None
+    # A1/A4：评测也不得挂载追问会话状态（否则 200 条会把 ask_sessions 写脏）
+    database.upsert_ask_session = lambda *a, **kw: None
     import app.trace as _trace_mod
     _trace_mod.set_enabled(False)
 

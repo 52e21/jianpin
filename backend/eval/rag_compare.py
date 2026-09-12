@@ -22,6 +22,15 @@ def load(path):
     return d.get("report", {}), {c["id"]: c for c in d.get("cases", [])}
 
 
+def _pred(c):
+    """预测结论：评测产物用 pred_conclusion；兼容其它命名的 actual/conclusion。"""
+    return (c or {}).get("pred_conclusion") or (c or {}).get("actual") or (c or {}).get("conclusion") or ""
+
+
+def _gt(c):
+    return (c or {}).get("gt_conclusion") or (c or {}).get("expected") or ""
+
+
 def fmt(v, nd=4):
     if isinstance(v, float):
         return ("%." + str(nd) + "f") % v
@@ -60,15 +69,15 @@ def compare(before_path, after_path, out_path="", limit=15):
         print("%-16s | %-17s | %s" % (name, b, a))
 
     fixed = sorted([i for i in set(cb) & set(ca)
-                    if cb[i].get("actual") != ca[i].get("actual") and ca[i].get("actual") == ca[i].get("expected")])
+                    if _pred(cb[i]) != _pred(ca[i]) and _pred(ca[i]) == _gt(ca[i])])
     broke = sorted([i for i in set(cb) & set(ca)
-                    if cb[i].get("actual") == cb[i].get("expected") and ca[i].get("actual") != ca[i].get("expected")])
-    changed = sorted([i for i in set(cb) & set(ca) if cb[i].get("actual") != ca[i].get("actual")])
+                    if _pred(cb[i]) == _gt(cb[i]) and _pred(ca[i]) != _gt(ca[i])])
+    changed = sorted([i for i in set(cb) & set(ca) if _pred(cb[i]) != _pred(ca[i])])
     print("\n逐条变化: 共 %d 条" % len(changed))
     print("  变一致(fixed): %d %s" % (len(fixed), fixed[:limit]))
     print("  变不一致(broke): %d %s" % (len(broke), broke[:limit]))
     for i in changed[:limit]:
-        print("   %s: %s→%s (期望 %s)" % (i, cb[i].get("actual"), ca[i].get("actual"), ca[i].get("expected")))
+        print("   %s: %s→%s (期望 %s)" % (i, _pred(cb[i]), _pred(ca[i]), _gt(ca[i])))
 
     if out_path:
         lines = ["| 指标 | 加 RAG 前 | 加 RAG 后 |", "|---|---|---|"]

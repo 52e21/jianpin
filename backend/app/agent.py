@@ -11,6 +11,7 @@ import copy
 import hashlib
 import json
 import logging
+import os
 import re
 import time
 from typing import AsyncGenerator, Optional
@@ -385,7 +386,7 @@ def _save_analyze_history(payload: dict, jd: str, resume: str, job_url,
 
 async def analyze_agent(jd: str, resume: str, job_url: str = "", ctx_mode: str = "structured",
                         tenant_id: str = "default", session_id: str = "default",
-                        role: str = ROLE_HR) -> dict:
+                        role: str = ROLE_HR, answers: list = None) -> dict:
     """执行完整分析并返回结构化结果（执行书字段为准）。
 
     与 run_agent 共用同一套规则解析/匹配/面试题/推荐逻辑与缓存键。
@@ -404,6 +405,30 @@ async def analyze_agent(jd: str, resume: str, job_url: str = "", ctx_mode: str =
     tenant_id = (tenant_id or "default").strip() or "default"
     session_id = (session_id or "default").strip() or "default"
     role = role if role in ROLES else ROLE_HR
+    # ---- A4/A5：追问状态机 ----
+    # round = 「已追问轮数」。这里只做两件事：
+    #   1) 把 HR 的补充回答**累积合并**进 JD（merged_jd），后续解析/匹配都用合并后的文本；
+    #   2) 信息仍不足时按轮数决定"继续追问"还是"转人工复核（待定）"。
+    # 开关 ASK_ENABLED=0 可整体关闭该分支（A 阶段评测的对照组）。
+    ASK_ON = os.environ.get("ASK_ENABLED", "1") != "0"
+    ask_state = None
+    if ASK_ON:
+        try:
+            from .database import fetch_ask_session
+
+            ask_state = fetch_ask_session(session_id)
+        except Exception:
+            ask_state = None
+    ask_round = int((ask_state or {}).get("round") or 0)
+    base_jd = ((ask_state or {}).get("merged_jd") or "").strip() or jd
+    # 只有"带补充回答"的请求才算追问续接，才复用会话里合并过的 JD；
+    # 否则一律用本次请求自己的 JD —— 否则同一 session_id 的连续请求（如评测跑批）
+    # 会互相覆盖 JD，实测会把一致率从 0.8141 打到 0.3216。
+    if ASK_ON and answers:
+        from .ask import merge_answers
+
+        jd = merge_answers(base_jd, answers)      # 累积合并历轮补充
+
     key = _cache_key(jd, resume, tenant_id, session_id, role)
 
     started = time.time()          # 缓存命中路径也要算耗时（并写历史行）
@@ -445,6 +470,72 @@ async def analyze_agent(jd: str, resume: str, job_url: str = "", ctx_mode: str =
 
     # 1. JD 解析（纯规则）
     jd_parse = _traced_node(trace_id, task_id, "parse_jd", jd, lambda: parse_jd(jd))
+
+    # ---- A2–A5：信息不足分支（插入点：parse_jd 之后、match_resume 之前）----
+    # 主干不动：只有"信息不足"才走分支；充足时下面一行注释之后的行为与加 Agent 之前完全一致。
+    if ASK_ON:
+        from .ask import ROUND_LIMIT, generate_questions, should_ask, sufficiency
+
+        suff = sufficiency(jd_parse, jd)
+        if suff["status"] == "insufficient":
+            qs = generate_questions(suff, jd_parse)
+            can_ask = should_ask(ask_round)                   # round < 2 才继续追问
+            next_round = ask_round + 1 if can_ask else ask_round
+            trace.record(trace_id, task_id, "ask_branch", input_hash=trace.hash_input(jd, resume),
+                         output={"status": "need_more_info" if can_ask else "insufficient_final",
+                                 "missing_fields": suff["missing_fields"], "round": next_round,
+                                 "questions": qs},
+                         degraded=not can_ask,
+                         degrade_reason="" if can_ask else "追问已达上限，转人工复核")
+            if can_ask:
+                try:
+                    from .database import upsert_ask_session
+
+                    upsert_ask_session(session_id=session_id, tenant_id=tenant_id, role=role,
+                                       jd=jd, resume=resume, job_url=job_url or "",
+                                       status="insufficient", round_no=next_round,
+                                       pending_questions=qs, merged_jd=jd)
+                except Exception:
+                    pass
+                return {
+                    "status": "need_more_info",
+                    "session_id": session_id, "tenant_id": tenant_id, "role": role,
+                    "task_id": task_id, "trace_id": trace_id, "job_url": job_url,
+                    "ask": {"questions": qs, "round": next_round, "round_limit": ROUND_LIMIT,
+                            "reason": suff["reason"], "missing_fields": suff["missing_fields"]},
+                    "jd_parse": jd_parse,
+                    "match_result": None,
+                    "interview_questions": [],
+                    "recommendation": {"type": "待定",
+                                       "reason": "JD 信息不足（%s），已向 HR 追问（第 %d/%d 轮）" % (
+                                           suff["reason"], next_round, ROUND_LIMIT),
+                                       "label": _role_label("待定", role), "role": role},
+                    "llm_calls": 0, "total_tokens": 0, "cache_hit": False,
+                }
+            # A5 边界：追问满 2 轮仍不足 → 转人工复核（待定），不再消耗 LLM
+            try:
+                from .database import upsert_ask_session
+
+                upsert_ask_session(session_id=session_id, status="closed",
+                                   pending_questions=[], merged_jd=jd)
+            except Exception:
+                pass
+            return {
+                "status": "insufficient_final",
+                "session_id": session_id, "tenant_id": tenant_id, "role": role,
+                "task_id": task_id, "trace_id": trace_id, "job_url": job_url,
+                "ask": {"questions": [], "round": ask_round, "round_limit": ROUND_LIMIT,
+                        "reason": "追问已达上限（%d 轮），信息仍不足，转人工复核" % ROUND_LIMIT,
+                        "missing_fields": suff["missing_fields"]},
+                "jd_parse": jd_parse,
+                "match_result": None,
+                "interview_questions": [],
+                "recommendation": {"type": "待定",
+                                   "reason": "JD 信息不足且追问已达上限（%d 轮），转人工复核" % ROUND_LIMIT,
+                                   "label": _role_label("待定", role), "role": role},
+                "llm_calls": 0, "total_tokens": 0, "cache_hit": False,
+            }
+    # ---- 分支结束：以下为原有主链路（信息充足时行为不变）----
 
     # 2. 简历匹配（纯规则加权）
     mr = _traced_node(trace_id, task_id, "match_resume", jd + "\u0001" + resume,
@@ -571,6 +662,16 @@ async def analyze_agent(jd: str, resume: str, job_url: str = "", ctx_mode: str =
                           llm_calls=stats["llm_call_count"],
                           total_tokens=stats.get("total_tokens", 0),
                           cache_hit=False)
+
+    # A4：追问闭环 —— 只有"之前追问过"的会话才改状态，避免把全新会话从 idle 改成 done
+    if ASK_ON and ask_state and (ask_state.get("status") == "insufficient" or ask_round > 0):
+        try:
+            from .database import upsert_ask_session
+
+            upsert_ask_session(session_id=session_id, status="done",
+                               merged_jd=jd, pending_questions=[])
+        except Exception:
+            pass
 
     logger.info(
         "ANALYZE-EXEC task=JD:%s | score=%s | llm_calls=%d | tokens=%d",

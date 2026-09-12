@@ -102,8 +102,15 @@ async def agent_analyze(payload: dict):
     role = (payload.get("role") or "hr").strip() or "hr"
     if role not in ROLES:
         raise HTTPException(status_code=400, detail="role 必须是 " + " / ".join(ROLES) + " 之一")
+    # A4：HR 对追问的补充回答（可选）——最多 3 条，空答案在合并时被忽略
+    answers = payload.get("answers")
+    if answers is not None and not isinstance(answers, list):
+        raise HTTPException(status_code=400, detail="answers 必须是数组")
+    answers = [a for a in (answers or []) if isinstance(a, dict)][:3] or None
+
     return await analyze_agent(jd, resume, job_url,
-                               tenant_id=tenant_id, session_id=session_id, role=role)
+                               tenant_id=tenant_id, session_id=session_id, role=role,
+                               answers=answers)
 
 
 @app.post("/api/agent/feedback")

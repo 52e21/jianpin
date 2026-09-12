@@ -155,6 +155,26 @@ def generate_questions(result, jd_parse: dict | None = None, limit: int = MAX_QU
     return out[:limit]
 
 
+def merge_answers(jd_text: str, answers) -> str:
+    """A4：把 HR 的补充回答**累积合并**进 JD 文本，交给 parse_jd 重新解析。
+
+    `answers` 形如 `[{"question": "...", "answer": "..."}]`；空答案忽略；
+    没有任何有效答案时原样返回 JD（保证"没补充"= 行为不变）。
+    """
+    lines = []
+    for a in answers or []:
+        if not isinstance(a, dict):
+            continue
+        q = (a.get("question") or "").strip()
+        ans = (a.get("answer") or "").strip()
+        if not ans:
+            continue
+        lines.append("- %s%s" % ((q + "：") if q else "", ans))
+    if not lines:
+        return (jd_text or "").strip()
+    return ((jd_text or "").strip() + "\n\n【HR 补充信息】\n" + "\n".join(lines)).strip()
+
+
 def ask_for(jd_text: str, jd_parse: dict | None = None) -> dict:
     """一步到位：判定 + 生成追问（A2 + A3 的组合入口，供编排层与测试使用）。"""
     from .tools import parse_jd
