@@ -21,6 +21,9 @@ ROLES = ("hr", "candidate")
 async def lifespan(app: FastAPI):
     # 启动时初始化数据库表
     init_db()
+    # R6：后台预热 RAG 检索栈（模型加载 + 建索引约 20s），不阻塞启动、失败静默
+    from .rag import warmup
+    warmup()
     yield
 
 

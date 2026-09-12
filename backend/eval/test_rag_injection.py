@@ -209,6 +209,13 @@ def part_f():
 
 
 if __name__ == "__main__":
+    # 纪律：测试不得写库/写 Trace（与本目录其它测试一致）
+    import app.database as _database
+    import app.trace as _trace
+
+    _trace.record = lambda *a, **k: None
+    _database.save_history = lambda *a, **k: None
+
     a, b, c, d, e, f = part_a(), part_b(), part_c(), part_d(), part_e(), part_f()
     allok = all([a, b, c, d, e, f])
     print("\n总结果:", "全部通过 ✅" if allok else "存在失败 ❌")
