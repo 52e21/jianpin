@@ -1,0 +1,7207 @@
+{
+  "report": {
+    "generated_at": "2026-09-12T22:46:14",
+    "eval_set": "eval_set_v1_1.jsonl",
+    "eval_set_size": 200,
+    "with_llm": false,
+    "elapsed_seconds": 0.9,
+    "conclusion_agreement": 0.8141,
+    "conclusion_agreement_n": "162/199",
+    "excluded_from_agreement": [
+      "E051"
+    ],
+    "excluded_note": "边界兜底用例（测的是接口层职责，见 contract_set_v1.jsonl），不计入一致率",
+    "confusion_gt_x_pred": {
+      "推荐": {
+        "推荐": 87,
+        "待定": 6,
+        "不推荐": 1
+      },
+      "不推荐": {
+        "不推荐": 22,
+        "待定": 26
+      },
+      "待定": {
+        "待定": 53,
+        "推荐": 4
+      }
+    },
+    "by_group": {
+      "hand": {
+        "label": "业务一致性（人工设计边界）",
+        "n": 43,
+        "agreement": 0.814,
+        "agreement_n": "35/43",
+        "skill_required_strict": {
+          "precision": 0.9017,
+          "recall": 0.9295,
+          "f1": 0.8989
+        },
+        "avg_tokens": 0.0,
+        "latency_ms_p95": 2.8
+      },
+      "real": {
+        "label": "业务一致性（真实输入/样本）",
+        "n": 16,
+        "agreement": 0.75,
+        "agreement_n": "12/16",
+        "skill_required_strict": {
+          "precision": 0.8422,
+          "recall": 0.9278,
+          "f1": 0.8612
+        },
+        "avg_tokens": 0.0,
+        "latency_ms_p95": 2.5
+      },
+      "template": {
+        "label": "规范一致性（模板生成）",
+        "n": 140,
+        "agreement": 0.8214,
+        "agreement_n": "115/140",
+        "skill_required_strict": {
+          "precision": 0.6976,
+          "recall": 1.0,
+          "f1": 0.8186
+        },
+        "avg_tokens": 0.0,
+        "latency_ms_p95": 1.0
+      }
+    },
+    "skill_all_strict": {
+      "precision": 0.9107,
+      "recall": 0.9832,
+      "f1": 0.9391
+    },
+    "skill_all_loose": {
+      "precision": 0.9107,
+      "recall": 0.9832,
+      "f1": 0.9391
+    },
+    "skill_required_strict": {
+      "precision": 0.7498,
+      "recall": 0.9802,
+      "f1": 0.838
+    },
+    "avg_tokens": 0.0,
+    "total_tokens": 0,
+    "latency_ms_p50": 0.6,
+    "latency_ms_p95": 1.2,
+    "latency_ms_max": 725.5,
+    "short_circuit_rate": 1.0,
+    "cache_hits": 0,
+    "error_count": 0,
+    "errors": []
+  },
+  "cases": [
+    {
+      "id": "E001",
+      "ok": true,
+      "source": "history",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 725.4740999997011,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Python",
+        "SQL"
+      ],
+      "gt_all": [
+        "Python",
+        "SQL"
+      ],
+      "match_score": 80,
+      "needs_human_review": false
+    },
+    {
+      "id": "E002",
+      "ok": true,
+      "source": "history",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.2622000012925128,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "React",
+        "TypeScript"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_required": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_all": [
+        "React",
+        "TypeScript"
+      ],
+      "match_score": 50,
+      "needs_human_review": false
+    },
+    {
+      "id": "E003",
+      "ok": true,
+      "source": "history",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.9241999996447703,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "React",
+        "TypeScript"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_required": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_all": [
+        "React",
+        "TypeScript"
+      ],
+      "match_score": 0,
+      "needs_human_review": false
+    },
+    {
+      "id": "E004",
+      "ok": true,
+      "source": "history",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.48289999904227443,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Python",
+        "SQL"
+      ],
+      "gt_all": [
+        "Python",
+        "SQL"
+      ],
+      "match_score": 67,
+      "needs_human_review": false
+    },
+    {
+      "id": "E005",
+      "ok": true,
+      "source": "history",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.8194000001822133,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Python",
+        "SQL"
+      ],
+      "gt_all": [
+        "Python",
+        "SQL"
+      ],
+      "match_score": 67,
+      "needs_human_review": false
+    },
+    {
+      "id": "E006",
+      "ok": true,
+      "source": "history",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.398700000208919,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "MySQL",
+        "Redis"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "MySQL",
+        "Redis"
+      ],
+      "gt_required": [
+        "Spring Boot",
+        "MySQL"
+      ],
+      "gt_all": [
+        "Spring Boot",
+        "MySQL",
+        "Redis"
+      ],
+      "match_score": 85,
+      "needs_human_review": false
+    },
+    {
+      "id": "E007",
+      "ok": true,
+      "source": "history",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.0419000009278534,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "React",
+        "TypeScript"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_required": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_all": [
+        "React",
+        "TypeScript"
+      ],
+      "match_score": 0,
+      "needs_human_review": false
+    },
+    {
+      "id": "E008",
+      "ok": true,
+      "source": "history",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5916999998589745,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot"
+      ],
+      "match_score": 92,
+      "needs_human_review": false
+    },
+    {
+      "id": "E009",
+      "ok": true,
+      "source": "history",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.54190000082599,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E010",
+      "ok": true,
+      "source": "history",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.47839999933785293,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Python",
+        "SQL"
+      ],
+      "gt_all": [
+        "Python",
+        "SQL"
+      ],
+      "match_score": 67,
+      "needs_human_review": false
+    },
+    {
+      "id": "E011",
+      "ok": true,
+      "source": "history",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5196000001888024,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E012",
+      "ok": true,
+      "source": "history",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.2882000007957686,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [],
+      "pred_preferred": [],
+      "pred_all": [],
+      "gt_required": [],
+      "gt_all": [],
+      "match_score": 0,
+      "needs_human_review": true
+    },
+    {
+      "id": "E013",
+      "ok": true,
+      "source": "sample_file",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7956999997986713,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Python",
+        "SQL",
+        "RAG"
+      ],
+      "pred_preferred": [
+        "大模型",
+        "产品设计"
+      ],
+      "pred_all": [
+        "Python",
+        "SQL",
+        "RAG",
+        "大模型",
+        "产品设计"
+      ],
+      "gt_required": [
+        "大模型",
+        "RAG",
+        "Python",
+        "SQL"
+      ],
+      "gt_all": [
+        "大模型",
+        "RAG",
+        "Python",
+        "SQL"
+      ],
+      "match_score": 76,
+      "needs_human_review": true
+    },
+    {
+      "id": "E014",
+      "ok": true,
+      "source": "sample_file",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7238999987748684,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "pred_preferred": [
+        "Power BI",
+        "Excel"
+      ],
+      "pred_all": [
+        "Python",
+        "SQL",
+        "数据分析",
+        "Power BI",
+        "Excel"
+      ],
+      "gt_required": [
+        "Python",
+        "SQL"
+      ],
+      "gt_all": [
+        "Python",
+        "SQL",
+        "Excel",
+        "Power BI"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E015",
+      "ok": true,
+      "source": "sample_file",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.4659000005631242,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "React",
+        "TypeScript"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_required": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_all": [
+        "React",
+        "TypeScript"
+      ],
+      "match_score": 0,
+      "needs_human_review": false
+    },
+    {
+      "id": "E016",
+      "ok": true,
+      "source": "frontend_sample",
+      "group": "real",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 2.4569999986852054,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "Spring",
+        "MySQL",
+        "Redis"
+      ],
+      "pred_preferred": [
+        "微服务",
+        "Docker",
+        "Kubernetes"
+      ],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "Spring",
+        "MySQL",
+        "Redis",
+        "微服务",
+        "Docker",
+        "Kubernetes"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot",
+        "MySQL",
+        "Redis",
+        "Docker",
+        "Kubernetes"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "MySQL",
+        "Redis",
+        "Docker",
+        "Kubernetes",
+        "Spring Cloud",
+        "开源项目"
+      ],
+      "match_score": 95,
+      "needs_human_review": false
+    },
+    {
+      "id": "E017",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.3206999990652548,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [],
+      "pred_preferred": [],
+      "pred_all": [],
+      "gt_required": [],
+      "gt_all": [],
+      "match_score": 0,
+      "needs_human_review": true
+    },
+    {
+      "id": "E018",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 4.956099999617436,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [],
+      "pred_preferred": [],
+      "pred_all": [],
+      "gt_required": [],
+      "gt_all": [],
+      "match_score": 0,
+      "needs_human_review": true
+    },
+    {
+      "id": "E019",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.3312999997433508,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [],
+      "pred_preferred": [],
+      "pred_all": [],
+      "gt_required": [],
+      "gt_all": [],
+      "match_score": 0,
+      "needs_human_review": true
+    },
+    {
+      "id": "E020",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6620999993174337,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "React",
+        "TypeScript"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_required": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_all": [
+        "React",
+        "TypeScript"
+      ],
+      "match_score": 0,
+      "needs_human_review": false
+    },
+    {
+      "id": "E021",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.4129999997530831,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Redis",
+        "消息队列"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Redis",
+        "消息队列"
+      ],
+      "gt_required": [
+        "Redis",
+        "消息队列"
+      ],
+      "gt_all": [
+        "Redis",
+        "消息队列"
+      ],
+      "match_score": 0,
+      "needs_human_review": false
+    },
+    {
+      "id": "E022",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5267999986244831,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Docker",
+        "Kubernetes"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Docker",
+        "Kubernetes"
+      ],
+      "gt_required": [
+        "Docker",
+        "Kubernetes"
+      ],
+      "gt_all": [
+        "Docker",
+        "Kubernetes"
+      ],
+      "match_score": 0,
+      "needs_human_review": false
+    },
+    {
+      "id": "E023",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7767000006424496,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Python",
+        "SQL",
+        "数据分析"
+      ],
+      "gt_required": [
+        "SQL",
+        "Python"
+      ],
+      "gt_all": [
+        "SQL",
+        "Python"
+      ],
+      "match_score": 0,
+      "needs_human_review": false
+    },
+    {
+      "id": "E024",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.9906000013870653,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "SQL"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "SQL"
+      ],
+      "gt_required": [
+        "SQL"
+      ],
+      "gt_all": [
+        "SQL"
+      ],
+      "match_score": 0,
+      "needs_human_review": true
+    },
+    {
+      "id": "E025",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.1807999999291496,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Spring"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring"
+      ],
+      "gt_required": [
+        "Spring"
+      ],
+      "gt_all": [
+        "Spring"
+      ],
+      "match_score": 100,
+      "needs_human_review": true
+    },
+    {
+      "id": "E026",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.8696999993844656,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Java"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java"
+      ],
+      "gt_required": [
+        "Java"
+      ],
+      "gt_all": [
+        "Java"
+      ],
+      "match_score": 0,
+      "needs_human_review": false
+    },
+    {
+      "id": "E027",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.0268999994877959,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Vue"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Vue"
+      ],
+      "gt_required": [
+        "Vue"
+      ],
+      "gt_all": [
+        "Vue"
+      ],
+      "match_score": 100,
+      "needs_human_review": true
+    },
+    {
+      "id": "E028",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.1059999997087289,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kubernetes"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Kubernetes"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Docker"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Docker"
+      ],
+      "match_score": 100,
+      "needs_human_review": true
+    },
+    {
+      "id": "E029",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.082700000551995,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Spring Boot"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring Boot"
+      ],
+      "gt_required": [
+        "Spring Boot",
+        "MySQL"
+      ],
+      "gt_all": [
+        "Spring Boot",
+        "MySQL"
+      ],
+      "match_score": 100,
+      "needs_human_review": true
+    },
+    {
+      "id": "E030",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.0916999999608379,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "React"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "React"
+      ],
+      "gt_required": [
+        "React",
+        "TypeScript"
+      ],
+      "gt_all": [
+        "React",
+        "TypeScript"
+      ],
+      "match_score": 100,
+      "needs_human_review": true
+    },
+    {
+      "id": "E031",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.0791000004246598,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Java"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java"
+      ],
+      "gt_required": [
+        "Java"
+      ],
+      "gt_all": [
+        "Java"
+      ],
+      "match_score": 89,
+      "needs_human_review": true
+    },
+    {
+      "id": "E032",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.16859999980079,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "PyTorch"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "PyTorch"
+      ],
+      "gt_required": [
+        "PyTorch"
+      ],
+      "gt_all": [
+        "PyTorch"
+      ],
+      "match_score": 92,
+      "needs_human_review": true
+    },
+    {
+      "id": "E033",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.0581000005913666,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Spark"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spark"
+      ],
+      "gt_required": [
+        "Spark"
+      ],
+      "gt_all": [
+        "Spark"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E034",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.2047000000166008,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Go"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Go"
+      ],
+      "gt_required": [
+        "Go"
+      ],
+      "gt_all": [
+        "Go"
+      ],
+      "match_score": 92,
+      "needs_human_review": true
+    },
+    {
+      "id": "E035",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.0958999991999008,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Java"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java"
+      ],
+      "gt_required": [
+        "Java"
+      ],
+      "gt_all": [
+        "Java"
+      ],
+      "match_score": 90,
+      "needs_human_review": true
+    },
+    {
+      "id": "E036",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.1673000008158851,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Java"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java"
+      ],
+      "gt_required": [
+        "Java"
+      ],
+      "gt_all": [
+        "Java"
+      ],
+      "match_score": 62,
+      "needs_human_review": true
+    },
+    {
+      "id": "E037",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.9836999997787643,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "React"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "React"
+      ],
+      "gt_required": [
+        "React"
+      ],
+      "gt_all": [
+        "React"
+      ],
+      "match_score": 100,
+      "needs_human_review": true
+    },
+    {
+      "id": "E038",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.9889000011753524,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Python"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Python"
+      ],
+      "gt_required": [
+        "Python"
+      ],
+      "gt_all": [
+        "Python"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E039",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.1190999994141748,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Redis"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Redis"
+      ],
+      "gt_required": [
+        "Java"
+      ],
+      "gt_all": [
+        "Java",
+        "Redis"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E040",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.0721999988163589,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "MySQL",
+        "Kafka"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "MySQL",
+        "Kafka"
+      ],
+      "gt_required": [
+        "MySQL"
+      ],
+      "gt_all": [
+        "MySQL",
+        "Kafka"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E041",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7783999990351731,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "MySQL"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "MySQL"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot",
+        "MySQL"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "MySQL"
+      ],
+      "match_score": 67,
+      "needs_human_review": true
+    },
+    {
+      "id": "E042",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6396999997377861,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "Docker"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "Docker"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "Docker"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E043",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.46210000073187985,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java"
+      ],
+      "gt_required": [
+        "Java"
+      ],
+      "gt_all": [
+        "Java"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E044",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.48830000014277175,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java"
+      ],
+      "gt_required": [
+        "Java"
+      ],
+      "gt_all": [
+        "Java"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E045",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.4542999995464925,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java"
+      ],
+      "gt_required": [
+        "Java"
+      ],
+      "gt_all": [
+        "Java"
+      ],
+      "match_score": 80,
+      "needs_human_review": true
+    },
+    {
+      "id": "E046",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5202000011195196,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Python"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Python"
+      ],
+      "gt_required": [
+        "Python"
+      ],
+      "gt_all": [
+        "Python"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E047",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.4227999997965526,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Go"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Go"
+      ],
+      "gt_required": [
+        "Go"
+      ],
+      "gt_all": [
+        "Go"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E048",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 2.9697999998461455,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java"
+      ],
+      "gt_required": [
+        "Java"
+      ],
+      "gt_all": [
+        "Java"
+      ],
+      "match_score": 100,
+      "needs_human_review": true
+    },
+    {
+      "id": "E049",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 2.8306000003794907,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java"
+      ],
+      "gt_required": [
+        "Java"
+      ],
+      "gt_all": [
+        "Java"
+      ],
+      "match_score": 100,
+      "needs_human_review": true
+    },
+    {
+      "id": "E050",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.41680000140331686,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [],
+      "pred_preferred": [],
+      "pred_all": [],
+      "gt_required": [],
+      "gt_all": [],
+      "match_score": 0,
+      "needs_human_review": true
+    },
+    {
+      "id": "E051",
+      "ok": true,
+      "source": "constructed",
+      "group": "boundary",
+      "excluded": true,
+      "error": "",
+      "latency_ms": 0.5324000012478791,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [],
+      "pred_preferred": [],
+      "pred_all": [],
+      "gt_required": [],
+      "gt_all": [],
+      "match_score": 0,
+      "needs_human_review": true
+    },
+    {
+      "id": "E052",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.46909999946365133,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Java"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java"
+      ],
+      "gt_required": [
+        "Java"
+      ],
+      "gt_all": [
+        "Java"
+      ],
+      "match_score": 0,
+      "needs_human_review": true
+    },
+    {
+      "id": "E053",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5393000010371907,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "MySQL",
+        "Redis"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "MySQL",
+        "Redis"
+      ],
+      "gt_required": [
+        "Java",
+        "MySQL"
+      ],
+      "gt_all": [
+        "Java",
+        "MySQL",
+        "Redis"
+      ],
+      "match_score": 100,
+      "needs_human_review": true
+    },
+    {
+      "id": "E054",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.592099999266793,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "MySQL"
+      ],
+      "pred_preferred": [
+        "Redis"
+      ],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "MySQL",
+        "Redis"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot",
+        "MySQL",
+        "Redis"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "MySQL",
+        "Redis"
+      ],
+      "match_score": 60,
+      "needs_human_review": true
+    },
+    {
+      "id": "E055",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.40190000072470866,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Java",
+        "Python"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Python"
+      ],
+      "gt_required": [
+        "Java",
+        "Python"
+      ],
+      "gt_all": [
+        "Java",
+        "Python"
+      ],
+      "match_score": 0,
+      "needs_human_review": true
+    },
+    {
+      "id": "E056",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.3231999999115942,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "推荐",
+      "pred_required": [],
+      "pred_preferred": [],
+      "pred_all": [],
+      "gt_required": [
+        "Selenium"
+      ],
+      "gt_all": [
+        "Selenium",
+        "JMeter"
+      ],
+      "match_score": 0,
+      "needs_human_review": false
+    },
+    {
+      "id": "E057",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5975999993097503,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "项目管理",
+        "Axure",
+        "需求分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "项目管理",
+        "Axure",
+        "需求分析"
+      ],
+      "gt_required": [
+        "需求分析",
+        "Axure"
+      ],
+      "gt_all": [
+        "需求分析",
+        "Axure",
+        "项目管理"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E058",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.0373999994044425,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "NLP",
+        "PyTorch",
+        "推荐算法"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "NLP",
+        "PyTorch",
+        "推荐算法"
+      ],
+      "gt_required": [
+        "PyTorch",
+        "NLP",
+        "推荐算法"
+      ],
+      "gt_all": [
+        "PyTorch",
+        "NLP",
+        "推荐算法"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E059",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7373000007646624,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "数据仓库",
+        "Hadoop",
+        "Spark",
+        "Flink"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "数据仓库",
+        "Hadoop",
+        "Spark",
+        "Flink"
+      ],
+      "gt_required": [
+        "Hadoop",
+        "Spark"
+      ],
+      "gt_all": [
+        "Hadoop",
+        "Spark",
+        "Flink"
+      ],
+      "match_score": 75,
+      "needs_human_review": false
+    },
+    {
+      "id": "E060",
+      "ok": true,
+      "source": "constructed",
+      "group": "hand",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6102000006649178,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Figma",
+        "用户研究"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Figma",
+        "用户研究"
+      ],
+      "gt_required": [
+        "Figma",
+        "用户研究"
+      ],
+      "gt_all": [
+        "Figma",
+        "用户研究"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E061",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5772000004071742,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E062",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5660999995598104,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "Kubernetes"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "Kubernetes"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "Kubernetes"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E063",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5558000011660624,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "pred_preferred": [
+        "数据分析"
+      ],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Django",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "match_score": 62,
+      "needs_human_review": true
+    },
+    {
+      "id": "E064",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5857000014657388,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E065",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5416000003606314,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "FastAPI",
+        "SQL",
+        "Spark"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "FastAPI",
+        "SQL",
+        "Spark"
+      ],
+      "gt_required": [
+        "SQL",
+        "FastAPI"
+      ],
+      "gt_all": [
+        "SQL",
+        "FastAPI",
+        "Spark"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E066",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.462800000605057,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Spring",
+        "Flask",
+        "需求分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring",
+        "Flask",
+        "需求分析"
+      ],
+      "gt_required": [
+        "Flask",
+        "Spring"
+      ],
+      "gt_all": [
+        "Flask",
+        "Spring",
+        "需求分析"
+      ],
+      "match_score": 49,
+      "needs_human_review": false
+    },
+    {
+      "id": "E067",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5694999999832362,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Spring Boot",
+        "消息队列",
+        "PyTorch"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring Boot",
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_required": [
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_all": [
+        "消息队列",
+        "PyTorch",
+        "Spring Boot"
+      ],
+      "match_score": 70,
+      "needs_human_review": true
+    },
+    {
+      "id": "E068",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6379999995260732,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "TypeScript",
+        "机器学习",
+        "NLP"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "TypeScript",
+        "机器学习",
+        "NLP"
+      ],
+      "gt_required": [
+        "NLP",
+        "机器学习"
+      ],
+      "gt_all": [
+        "NLP",
+        "机器学习",
+        "TypeScript"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E069",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7461000004695961,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Docker",
+        "Spark",
+        "Flink"
+      ],
+      "pred_preferred": [
+        "NLP"
+      ],
+      "pred_all": [
+        "Docker",
+        "Spark",
+        "Flink",
+        "NLP"
+      ],
+      "gt_required": [
+        "Spark",
+        "Flink"
+      ],
+      "gt_all": [
+        "Spark",
+        "Flink",
+        "Docker"
+      ],
+      "match_score": 75,
+      "needs_human_review": true
+    },
+    {
+      "id": "E070",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7910999993328005,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "FastAPI",
+        "Axure",
+        "Figma"
+      ],
+      "pred_preferred": [
+        "机器学习"
+      ],
+      "pred_all": [
+        "FastAPI",
+        "Axure",
+        "Figma",
+        "机器学习"
+      ],
+      "gt_required": [
+        "Figma",
+        "Axure"
+      ],
+      "gt_all": [
+        "Figma",
+        "Axure",
+        "FastAPI"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E071",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5784000004496193,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "消息队列",
+        "项目管理",
+        "爬虫"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "消息队列",
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_required": [
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_all": [
+        "项目管理",
+        "爬虫",
+        "消息队列"
+      ],
+      "match_score": 70,
+      "needs_human_review": true
+    },
+    {
+      "id": "E072",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7562999999208841,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "数据分析"
+      ],
+      "pred_preferred": [
+        "Go"
+      ],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "数据分析",
+        "Go"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "数据分析"
+      ],
+      "match_score": 89,
+      "needs_human_review": false
+    },
+    {
+      "id": "E073",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6142999991425313,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Go",
+        "React",
+        "Axure"
+      ],
+      "pred_preferred": [
+        "Python"
+      ],
+      "pred_all": [
+        "Go",
+        "React",
+        "Axure",
+        "Python"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "Axure"
+      ],
+      "match_score": 82,
+      "needs_human_review": true
+    },
+    {
+      "id": "E074",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5293000012898119,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "Java"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "Java"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "Java"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E075",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5298999985825503,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Vue"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Vue"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Vue"
+      ],
+      "match_score": 63,
+      "needs_human_review": true
+    },
+    {
+      "id": "E076",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5937999994785059,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kafka",
+        "Kubernetes",
+        "Linux"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Kafka",
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "Kafka"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E077",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.154700001279707,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Spring",
+        "微服务",
+        "Flask"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring",
+        "微服务",
+        "Flask"
+      ],
+      "gt_required": [
+        "Flask",
+        "Spring"
+      ],
+      "gt_all": [
+        "Flask",
+        "Spring",
+        "微服务"
+      ],
+      "match_score": 49,
+      "needs_human_review": false
+    },
+    {
+      "id": "E078",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7757000003039138,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "消息队列",
+        "机器学习",
+        "PyTorch"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "消息队列",
+        "机器学习",
+        "PyTorch"
+      ],
+      "gt_required": [
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_all": [
+        "消息队列",
+        "PyTorch",
+        "机器学习"
+      ],
+      "match_score": 70,
+      "needs_human_review": true
+    },
+    {
+      "id": "E079",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6152000005386071,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "机器学习",
+        "NLP",
+        "Figma"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "机器学习",
+        "NLP",
+        "Figma"
+      ],
+      "gt_required": [
+        "NLP",
+        "机器学习"
+      ],
+      "gt_all": [
+        "NLP",
+        "机器学习",
+        "Figma"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E080",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5418000000645407,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Spark",
+        "Flink",
+        "OCR"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spark",
+        "Flink",
+        "OCR"
+      ],
+      "gt_required": [
+        "Spark",
+        "Flink"
+      ],
+      "gt_all": [
+        "Spark",
+        "Flink",
+        "OCR"
+      ],
+      "match_score": 78,
+      "needs_human_review": true
+    },
+    {
+      "id": "E081",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5442000001494307,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "React",
+        "Axure",
+        "Figma"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "React",
+        "Axure",
+        "Figma"
+      ],
+      "gt_required": [
+        "Figma",
+        "Axure"
+      ],
+      "gt_all": [
+        "Figma",
+        "Axure",
+        "React"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E082",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6550999987666728,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "项目管理",
+        "爬虫"
+      ],
+      "pred_preferred": [
+        "NLP"
+      ],
+      "pred_all": [
+        "Redis",
+        "项目管理",
+        "爬虫",
+        "NLP"
+      ],
+      "gt_required": [
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_all": [
+        "项目管理",
+        "爬虫",
+        "Redis"
+      ],
+      "match_score": 69,
+      "needs_human_review": true
+    },
+    {
+      "id": "E083",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.392999998643063,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "Nginx"
+      ],
+      "pred_preferred": [
+        "机器学习"
+      ],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "Nginx",
+        "机器学习"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "Nginx"
+      ],
+      "match_score": 89,
+      "needs_human_review": false
+    },
+    {
+      "id": "E084",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6896999984746799,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Spring",
+        "Go",
+        "React"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring",
+        "Go",
+        "React"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "Spring"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E085",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5049000010330928,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "Go",
+        "NLP"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "Go",
+        "NLP"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "NLP"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E086",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.674000000799424,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Hadoop"
+      ],
+      "pred_preferred": [
+        "Python"
+      ],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Hadoop",
+        "Python"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Hadoop"
+      ],
+      "match_score": 62,
+      "needs_human_review": true
+    },
+    {
+      "id": "E087",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.030499999615131,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kubernetes",
+        "Linux",
+        "爬虫"
+      ],
+      "pred_preferred": [
+        "Java"
+      ],
+      "pred_all": [
+        "Kubernetes",
+        "Linux",
+        "爬虫",
+        "Java"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "爬虫"
+      ],
+      "match_score": 96,
+      "needs_human_review": false
+    },
+    {
+      "id": "E088",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.2110999996366445,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "FastAPI",
+        "Go",
+        "SQL"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "FastAPI",
+        "Go",
+        "SQL"
+      ],
+      "gt_required": [
+        "SQL",
+        "FastAPI"
+      ],
+      "gt_all": [
+        "SQL",
+        "FastAPI",
+        "Go"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E089",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7728999989922158,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Spring",
+        "MySQL",
+        "Flask"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring",
+        "MySQL",
+        "Flask"
+      ],
+      "gt_required": [
+        "Flask",
+        "Spring"
+      ],
+      "gt_all": [
+        "Flask",
+        "Spring",
+        "MySQL"
+      ],
+      "match_score": 49,
+      "needs_human_review": false
+    },
+    {
+      "id": "E090",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.8603000005678041,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "消息队列",
+        "Linux",
+        "PyTorch"
+      ],
+      "pred_preferred": [
+        "数据分析"
+      ],
+      "pred_all": [
+        "消息队列",
+        "Linux",
+        "PyTorch",
+        "数据分析"
+      ],
+      "gt_required": [
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_all": [
+        "消息队列",
+        "PyTorch",
+        "Linux"
+      ],
+      "match_score": 69,
+      "needs_human_review": true
+    },
+    {
+      "id": "E091",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.628700001470861,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Flask",
+        "机器学习",
+        "NLP"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Flask",
+        "机器学习",
+        "NLP"
+      ],
+      "gt_required": [
+        "NLP",
+        "机器学习"
+      ],
+      "gt_all": [
+        "NLP",
+        "机器学习",
+        "Flask"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E092",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5634999997710111,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Spark",
+        "Flink",
+        "TensorFlow"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spark",
+        "Flink",
+        "TensorFlow"
+      ],
+      "gt_required": [
+        "Spark",
+        "Flink"
+      ],
+      "gt_all": [
+        "Spark",
+        "Flink",
+        "TensorFlow"
+      ],
+      "match_score": 78,
+      "needs_human_review": true
+    },
+    {
+      "id": "E093",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5403000013757264,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Flink",
+        "Axure",
+        "Figma"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Flink",
+        "Axure",
+        "Figma"
+      ],
+      "gt_required": [
+        "Figma",
+        "Axure"
+      ],
+      "gt_all": [
+        "Figma",
+        "Axure",
+        "Flink"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E094",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.650499998300802,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "Python"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "Python"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "Python"
+      ],
+      "match_score": 93,
+      "needs_human_review": false
+    },
+    {
+      "id": "E095",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.602699999944889,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "NLP"
+      ],
+      "pred_all": [
+        "Go",
+        "React",
+        "JavaScript",
+        "NLP"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "match_score": 82,
+      "needs_human_review": true
+    },
+    {
+      "id": "E096",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5331000011210563,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "Kubernetes",
+        "机器学习"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "Kubernetes",
+        "机器学习"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "Kubernetes"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E097",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5450000007840572,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "match_score": 63,
+      "needs_human_review": true
+    },
+    {
+      "id": "E098",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.1661999997159,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "pred_preferred": [
+        "Go"
+      ],
+      "pred_all": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch",
+        "Go"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "match_score": 96,
+      "needs_human_review": false
+    },
+    {
+      "id": "E099",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5780999999842606,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "FastAPI",
+        "SQL",
+        "Spark"
+      ],
+      "pred_preferred": [
+        "Python"
+      ],
+      "pred_all": [
+        "FastAPI",
+        "SQL",
+        "Spark",
+        "Python"
+      ],
+      "gt_required": [
+        "SQL",
+        "FastAPI"
+      ],
+      "gt_all": [
+        "SQL",
+        "FastAPI",
+        "Spark"
+      ],
+      "match_score": 82,
+      "needs_human_review": true
+    },
+    {
+      "id": "E100",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5516000001080101,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Spring",
+        "Flask",
+        "需求分析"
+      ],
+      "pred_preferred": [
+        "Java"
+      ],
+      "pred_all": [
+        "Spring",
+        "Flask",
+        "需求分析",
+        "Java"
+      ],
+      "gt_required": [
+        "Flask",
+        "Spring"
+      ],
+      "gt_all": [
+        "Flask",
+        "Spring",
+        "需求分析"
+      ],
+      "match_score": 49,
+      "needs_human_review": false
+    },
+    {
+      "id": "E101",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6199999988893978,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Spring Boot",
+        "消息队列",
+        "PyTorch"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring Boot",
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_required": [
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_all": [
+        "消息队列",
+        "PyTorch",
+        "Spring Boot"
+      ],
+      "match_score": 70,
+      "needs_human_review": true
+    },
+    {
+      "id": "E102",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6310999997367617,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "TypeScript",
+        "机器学习",
+        "NLP"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "TypeScript",
+        "机器学习",
+        "NLP"
+      ],
+      "gt_required": [
+        "NLP",
+        "机器学习"
+      ],
+      "gt_all": [
+        "NLP",
+        "机器学习",
+        "TypeScript"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E103",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5990999998175539,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Docker",
+        "Spark",
+        "Flink"
+      ],
+      "pred_preferred": [
+        "数据分析"
+      ],
+      "pred_all": [
+        "Docker",
+        "Spark",
+        "Flink",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Spark",
+        "Flink"
+      ],
+      "gt_all": [
+        "Spark",
+        "Flink",
+        "Docker"
+      ],
+      "match_score": 75,
+      "needs_human_review": true
+    },
+    {
+      "id": "E104",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5056999998487299,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "FastAPI",
+        "Axure",
+        "Figma"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "FastAPI",
+        "Axure",
+        "Figma"
+      ],
+      "gt_required": [
+        "Figma",
+        "Axure"
+      ],
+      "gt_all": [
+        "Figma",
+        "Axure",
+        "FastAPI"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E105",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5466999991767807,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "消息队列",
+        "项目管理",
+        "爬虫"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "消息队列",
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_required": [
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_all": [
+        "项目管理",
+        "爬虫",
+        "消息队列"
+      ],
+      "match_score": 70,
+      "needs_human_review": true
+    },
+    {
+      "id": "E106",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7485000005544862,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "数据分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "数据分析"
+      ],
+      "match_score": 93,
+      "needs_human_review": false
+    },
+    {
+      "id": "E107",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5424999999377178,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Go",
+        "React",
+        "Axure"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Go",
+        "React",
+        "Axure"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "Axure"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E108",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5117000000609551,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "Java"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "Java"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "Java"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E109",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5727999996452127,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Vue"
+      ],
+      "pred_preferred": [
+        "NLP"
+      ],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Vue",
+        "NLP"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Vue"
+      ],
+      "match_score": 62,
+      "needs_human_review": true
+    },
+    {
+      "id": "E110",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6629999988945201,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kafka",
+        "Kubernetes",
+        "Linux"
+      ],
+      "pred_preferred": [
+        "机器学习"
+      ],
+      "pred_all": [
+        "Kafka",
+        "Kubernetes",
+        "Linux",
+        "机器学习"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "Kafka"
+      ],
+      "match_score": 96,
+      "needs_human_review": false
+    },
+    {
+      "id": "E111",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.4898000006505754,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Spring",
+        "微服务",
+        "Flask"
+      ],
+      "pred_preferred": [
+        "Go"
+      ],
+      "pred_all": [
+        "Spring",
+        "微服务",
+        "Flask",
+        "Go"
+      ],
+      "gt_required": [
+        "Flask",
+        "Spring"
+      ],
+      "gt_all": [
+        "Flask",
+        "Spring",
+        "微服务"
+      ],
+      "match_score": 49,
+      "needs_human_review": false
+    },
+    {
+      "id": "E112",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5744999998569256,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "消息队列",
+        "机器学习",
+        "PyTorch"
+      ],
+      "pred_preferred": [
+        "Python"
+      ],
+      "pred_all": [
+        "消息队列",
+        "机器学习",
+        "PyTorch",
+        "Python"
+      ],
+      "gt_required": [
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_all": [
+        "消息队列",
+        "PyTorch",
+        "机器学习"
+      ],
+      "match_score": 69,
+      "needs_human_review": true
+    },
+    {
+      "id": "E113",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6276000003708759,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "机器学习",
+        "NLP",
+        "Figma"
+      ],
+      "pred_preferred": [
+        "Java"
+      ],
+      "pred_all": [
+        "机器学习",
+        "NLP",
+        "Figma",
+        "Java"
+      ],
+      "gt_required": [
+        "NLP",
+        "机器学习"
+      ],
+      "gt_all": [
+        "NLP",
+        "机器学习",
+        "Figma"
+      ],
+      "match_score": 96,
+      "needs_human_review": false
+    },
+    {
+      "id": "E114",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.614099999438622,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Spark",
+        "Flink",
+        "OCR"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spark",
+        "Flink",
+        "OCR"
+      ],
+      "gt_required": [
+        "Spark",
+        "Flink"
+      ],
+      "gt_all": [
+        "Spark",
+        "Flink",
+        "OCR"
+      ],
+      "match_score": 78,
+      "needs_human_review": true
+    },
+    {
+      "id": "E115",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.505199999679462,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "React",
+        "Axure",
+        "Figma"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "React",
+        "Axure",
+        "Figma"
+      ],
+      "gt_required": [
+        "Figma",
+        "Axure"
+      ],
+      "gt_all": [
+        "Figma",
+        "Axure",
+        "React"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E116",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6768999992345925,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "项目管理",
+        "爬虫"
+      ],
+      "pred_preferred": [
+        "数据分析"
+      ],
+      "pred_all": [
+        "Redis",
+        "项目管理",
+        "爬虫",
+        "数据分析"
+      ],
+      "gt_required": [
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_all": [
+        "项目管理",
+        "爬虫",
+        "Redis"
+      ],
+      "match_score": 69,
+      "needs_human_review": true
+    },
+    {
+      "id": "E117",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.973399999566027,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "Nginx"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "Nginx"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "Nginx"
+      ],
+      "match_score": 93,
+      "needs_human_review": false
+    },
+    {
+      "id": "E118",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.0946999991574557,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Spring",
+        "Go",
+        "React"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring",
+        "Go",
+        "React"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "Spring"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E119",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5686000004061498,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "NLP"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "NLP"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "NLP"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E120",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5574999995587859,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Hadoop"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Hadoop"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Hadoop"
+      ],
+      "match_score": 63,
+      "needs_human_review": true
+    },
+    {
+      "id": "E121",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5872999990970129,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kubernetes",
+        "Linux",
+        "爬虫"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Kubernetes",
+        "Linux",
+        "爬虫"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "爬虫"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E122",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.98479999905976,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "FastAPI",
+        "Go",
+        "SQL"
+      ],
+      "pred_preferred": [
+        "NLP"
+      ],
+      "pred_all": [
+        "FastAPI",
+        "Go",
+        "SQL",
+        "NLP"
+      ],
+      "gt_required": [
+        "SQL",
+        "FastAPI"
+      ],
+      "gt_all": [
+        "SQL",
+        "FastAPI",
+        "Go"
+      ],
+      "match_score": 82,
+      "needs_human_review": true
+    },
+    {
+      "id": "E123",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.9809999992285157,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Spring",
+        "MySQL",
+        "Flask"
+      ],
+      "pred_preferred": [
+        "机器学习"
+      ],
+      "pred_all": [
+        "Spring",
+        "MySQL",
+        "Flask",
+        "机器学习"
+      ],
+      "gt_required": [
+        "Flask",
+        "Spring"
+      ],
+      "gt_all": [
+        "Flask",
+        "Spring",
+        "MySQL"
+      ],
+      "match_score": 49,
+      "needs_human_review": false
+    },
+    {
+      "id": "E124",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.3393000008363742,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "消息队列",
+        "Linux",
+        "PyTorch"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "消息队列",
+        "Linux",
+        "PyTorch"
+      ],
+      "gt_required": [
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_all": [
+        "消息队列",
+        "PyTorch",
+        "Linux"
+      ],
+      "match_score": 70,
+      "needs_human_review": true
+    },
+    {
+      "id": "E125",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.8882000001904089,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Flask",
+        "机器学习",
+        "NLP"
+      ],
+      "pred_preferred": [
+        "Go"
+      ],
+      "pred_all": [
+        "Flask",
+        "机器学习",
+        "NLP",
+        "Go"
+      ],
+      "gt_required": [
+        "NLP",
+        "机器学习"
+      ],
+      "gt_all": [
+        "NLP",
+        "机器学习",
+        "Flask"
+      ],
+      "match_score": 96,
+      "needs_human_review": false
+    },
+    {
+      "id": "E126",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6897999992361292,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Spark",
+        "Flink",
+        "TensorFlow"
+      ],
+      "pred_preferred": [
+        "Python"
+      ],
+      "pred_all": [
+        "Spark",
+        "Flink",
+        "TensorFlow",
+        "Python"
+      ],
+      "gt_required": [
+        "Spark",
+        "Flink"
+      ],
+      "gt_all": [
+        "Spark",
+        "Flink",
+        "TensorFlow"
+      ],
+      "match_score": 75,
+      "needs_human_review": true
+    },
+    {
+      "id": "E127",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5622000007861061,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Flink",
+        "Axure",
+        "Figma"
+      ],
+      "pred_preferred": [
+        "Java"
+      ],
+      "pred_all": [
+        "Flink",
+        "Axure",
+        "Figma",
+        "Java"
+      ],
+      "gt_required": [
+        "Figma",
+        "Axure"
+      ],
+      "gt_all": [
+        "Figma",
+        "Axure",
+        "Flink"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E128",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6343000004562782,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "Python"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "Python"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "Python"
+      ],
+      "match_score": 93,
+      "needs_human_review": false
+    },
+    {
+      "id": "E129",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 1.605899999049143,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "数据分析"
+      ],
+      "pred_all": [
+        "Go",
+        "React",
+        "JavaScript",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "match_score": 82,
+      "needs_human_review": true
+    },
+    {
+      "id": "E130",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.771099999838043,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "Kubernetes"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "Kubernetes"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "Kubernetes"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E131",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6282999984250637,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "match_score": 63,
+      "needs_human_review": true
+    },
+    {
+      "id": "E132",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6173000001581386,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E133",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7743999995000195,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "FastAPI",
+        "SQL",
+        "Spark"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "FastAPI",
+        "SQL",
+        "Spark"
+      ],
+      "gt_required": [
+        "SQL",
+        "FastAPI"
+      ],
+      "gt_all": [
+        "SQL",
+        "FastAPI",
+        "Spark"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E134",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7034000009298325,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Spring",
+        "Flask",
+        "需求分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring",
+        "Flask",
+        "需求分析"
+      ],
+      "gt_required": [
+        "Flask",
+        "Spring"
+      ],
+      "gt_all": [
+        "Flask",
+        "Spring",
+        "需求分析"
+      ],
+      "match_score": 49,
+      "needs_human_review": false
+    },
+    {
+      "id": "E135",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7631000007677358,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Spring Boot",
+        "消息队列",
+        "PyTorch"
+      ],
+      "pred_preferred": [
+        "NLP"
+      ],
+      "pred_all": [
+        "Spring Boot",
+        "消息队列",
+        "PyTorch",
+        "NLP"
+      ],
+      "gt_required": [
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_all": [
+        "消息队列",
+        "PyTorch",
+        "Spring Boot"
+      ],
+      "match_score": 69,
+      "needs_human_review": true
+    },
+    {
+      "id": "E136",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6463999998231884,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "TypeScript",
+        "机器学习",
+        "NLP"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "TypeScript",
+        "机器学习",
+        "NLP"
+      ],
+      "gt_required": [
+        "NLP",
+        "机器学习"
+      ],
+      "gt_all": [
+        "NLP",
+        "机器学习",
+        "TypeScript"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E137",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5725999999413034,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Docker",
+        "Spark",
+        "Flink"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Docker",
+        "Spark",
+        "Flink"
+      ],
+      "gt_required": [
+        "Spark",
+        "Flink"
+      ],
+      "gt_all": [
+        "Spark",
+        "Flink",
+        "Docker"
+      ],
+      "match_score": 78,
+      "needs_human_review": true
+    },
+    {
+      "id": "E138",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7819000002200482,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "FastAPI",
+        "Axure",
+        "Figma"
+      ],
+      "pred_preferred": [
+        "Go"
+      ],
+      "pred_all": [
+        "FastAPI",
+        "Axure",
+        "Figma",
+        "Go"
+      ],
+      "gt_required": [
+        "Figma",
+        "Axure"
+      ],
+      "gt_all": [
+        "Figma",
+        "Axure",
+        "FastAPI"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E139",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.9410999991814606,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "消息队列",
+        "项目管理",
+        "爬虫"
+      ],
+      "pred_preferred": [
+        "Python"
+      ],
+      "pred_all": [
+        "消息队列",
+        "项目管理",
+        "爬虫",
+        "Python"
+      ],
+      "gt_required": [
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_all": [
+        "项目管理",
+        "爬虫",
+        "消息队列"
+      ],
+      "match_score": 69,
+      "needs_human_review": true
+    },
+    {
+      "id": "E140",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6922000011400087,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "数据分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "数据分析"
+      ],
+      "match_score": 93,
+      "needs_human_review": false
+    },
+    {
+      "id": "E141",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.9401000006619142,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Go",
+        "React",
+        "Axure"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Go",
+        "React",
+        "Axure"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "Axure"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E142",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.8267000011983328,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "Java"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "Java"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "Java"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E143",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6227000012586359,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Vue"
+      ],
+      "pred_preferred": [
+        "数据分析"
+      ],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Vue",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Vue"
+      ],
+      "match_score": 62,
+      "needs_human_review": true
+    },
+    {
+      "id": "E144",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6395000000338769,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kafka",
+        "Kubernetes",
+        "Linux"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Kafka",
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "Kafka"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E145",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.4668000001402106,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Spring",
+        "微服务",
+        "Flask"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring",
+        "微服务",
+        "Flask"
+      ],
+      "gt_required": [
+        "Flask",
+        "Spring"
+      ],
+      "gt_all": [
+        "Flask",
+        "Spring",
+        "微服务"
+      ],
+      "match_score": 49,
+      "needs_human_review": false
+    },
+    {
+      "id": "E146",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5421000005298993,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "消息队列",
+        "机器学习",
+        "PyTorch"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "消息队列",
+        "机器学习",
+        "PyTorch"
+      ],
+      "gt_required": [
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_all": [
+        "消息队列",
+        "PyTorch",
+        "机器学习"
+      ],
+      "match_score": 70,
+      "needs_human_review": true
+    },
+    {
+      "id": "E147",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.602699999944889,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "机器学习",
+        "NLP",
+        "Figma"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "机器学习",
+        "NLP",
+        "Figma"
+      ],
+      "gt_required": [
+        "NLP",
+        "机器学习"
+      ],
+      "gt_all": [
+        "NLP",
+        "机器学习",
+        "Figma"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E148",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5528999990929151,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Spark",
+        "Flink",
+        "OCR"
+      ],
+      "pred_preferred": [
+        "NLP"
+      ],
+      "pred_all": [
+        "Spark",
+        "Flink",
+        "OCR",
+        "NLP"
+      ],
+      "gt_required": [
+        "Spark",
+        "Flink"
+      ],
+      "gt_all": [
+        "Spark",
+        "Flink",
+        "OCR"
+      ],
+      "match_score": 75,
+      "needs_human_review": true
+    },
+    {
+      "id": "E149",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.49169999874720816,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "React",
+        "Axure",
+        "Figma"
+      ],
+      "pred_preferred": [
+        "机器学习"
+      ],
+      "pred_all": [
+        "React",
+        "Axure",
+        "Figma",
+        "机器学习"
+      ],
+      "gt_required": [
+        "Figma",
+        "Axure"
+      ],
+      "gt_all": [
+        "Figma",
+        "Axure",
+        "React"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E150",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5382999988796655,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "项目管理",
+        "爬虫"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Redis",
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_required": [
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_all": [
+        "项目管理",
+        "爬虫",
+        "Redis"
+      ],
+      "match_score": 70,
+      "needs_human_review": true
+    },
+    {
+      "id": "E151",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6582999994861893,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "Nginx"
+      ],
+      "pred_preferred": [
+        "Go"
+      ],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "Nginx",
+        "Go"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "Nginx"
+      ],
+      "match_score": 89,
+      "needs_human_review": false
+    },
+    {
+      "id": "E152",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.8971999995992519,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Spring",
+        "Go",
+        "React"
+      ],
+      "pred_preferred": [
+        "Python"
+      ],
+      "pred_all": [
+        "Spring",
+        "Go",
+        "React",
+        "Python"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "Spring"
+      ],
+      "match_score": 82,
+      "needs_human_review": true
+    },
+    {
+      "id": "E153",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5373999993025791,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "Java",
+        "NLP"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "Java",
+        "NLP"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "NLP"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E154",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5550000005314359,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Hadoop"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Hadoop"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Hadoop"
+      ],
+      "match_score": 63,
+      "needs_human_review": true
+    },
+    {
+      "id": "E155",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5710999994334998,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kubernetes",
+        "Linux",
+        "爬虫"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Kubernetes",
+        "Linux",
+        "爬虫"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "爬虫"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E156",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.550499999008025,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "FastAPI",
+        "Go",
+        "SQL"
+      ],
+      "pred_preferred": [
+        "数据分析"
+      ],
+      "pred_all": [
+        "FastAPI",
+        "Go",
+        "SQL",
+        "数据分析"
+      ],
+      "gt_required": [
+        "SQL",
+        "FastAPI"
+      ],
+      "gt_all": [
+        "SQL",
+        "FastAPI",
+        "Go"
+      ],
+      "match_score": 82,
+      "needs_human_review": true
+    },
+    {
+      "id": "E157",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.44379999962984584,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Spring",
+        "MySQL",
+        "Flask"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring",
+        "MySQL",
+        "Flask"
+      ],
+      "gt_required": [
+        "Flask",
+        "Spring"
+      ],
+      "gt_all": [
+        "Flask",
+        "Spring",
+        "MySQL"
+      ],
+      "match_score": 49,
+      "needs_human_review": false
+    },
+    {
+      "id": "E158",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5536999997275416,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "消息队列",
+        "Linux",
+        "PyTorch"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "消息队列",
+        "Linux",
+        "PyTorch"
+      ],
+      "gt_required": [
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_all": [
+        "消息队列",
+        "PyTorch",
+        "Linux"
+      ],
+      "match_score": 70,
+      "needs_human_review": true
+    },
+    {
+      "id": "E159",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.556999999389518,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Flask",
+        "机器学习",
+        "NLP"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Flask",
+        "机器学习",
+        "NLP"
+      ],
+      "gt_required": [
+        "NLP",
+        "机器学习"
+      ],
+      "gt_all": [
+        "NLP",
+        "机器学习",
+        "Flask"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E160",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5466999991767807,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Spark",
+        "Flink",
+        "TensorFlow"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spark",
+        "Flink",
+        "TensorFlow"
+      ],
+      "gt_required": [
+        "Spark",
+        "Flink"
+      ],
+      "gt_all": [
+        "Spark",
+        "Flink",
+        "TensorFlow"
+      ],
+      "match_score": 78,
+      "needs_human_review": true
+    },
+    {
+      "id": "E161",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5161999997653766,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Flink",
+        "Axure",
+        "Figma"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Flink",
+        "Axure",
+        "Figma"
+      ],
+      "gt_required": [
+        "Figma",
+        "Axure"
+      ],
+      "gt_all": [
+        "Figma",
+        "Axure",
+        "Flink"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E162",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6167999999888707,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "Python"
+      ],
+      "pred_preferred": [
+        "机器学习"
+      ],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "Python",
+        "机器学习"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "Python"
+      ],
+      "match_score": 89,
+      "needs_human_review": false
+    },
+    {
+      "id": "E163",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5567999996856088,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E164",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5245000011200318,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "Go",
+        "Kubernetes"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "Go",
+        "Kubernetes"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "Kubernetes"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E165",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.636500000837259,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "pred_preferred": [
+        "Python"
+      ],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Django",
+        "Python"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "match_score": 62,
+      "needs_human_review": true
+    },
+    {
+      "id": "E166",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6363000011333497,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "pred_preferred": [
+        "Java"
+      ],
+      "pred_all": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch",
+        "Java"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "match_score": 96,
+      "needs_human_review": false
+    },
+    {
+      "id": "E167",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6269000004976988,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "FastAPI",
+        "SQL",
+        "Spark"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "FastAPI",
+        "SQL",
+        "Spark"
+      ],
+      "gt_required": [
+        "SQL",
+        "FastAPI"
+      ],
+      "gt_all": [
+        "SQL",
+        "FastAPI",
+        "Spark"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E168",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.8315000013681129,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Spring",
+        "Flask",
+        "需求分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring",
+        "Flask",
+        "需求分析"
+      ],
+      "gt_required": [
+        "Flask",
+        "Spring"
+      ],
+      "gt_all": [
+        "Flask",
+        "Spring",
+        "需求分析"
+      ],
+      "match_score": 49,
+      "needs_human_review": false
+    },
+    {
+      "id": "E169",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.8863000002747867,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Spring Boot",
+        "消息队列",
+        "PyTorch"
+      ],
+      "pred_preferred": [
+        "数据分析"
+      ],
+      "pred_all": [
+        "Spring Boot",
+        "消息队列",
+        "PyTorch",
+        "数据分析"
+      ],
+      "gt_required": [
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_all": [
+        "消息队列",
+        "PyTorch",
+        "Spring Boot"
+      ],
+      "match_score": 69,
+      "needs_human_review": true
+    },
+    {
+      "id": "E170",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7673000000067987,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "TypeScript",
+        "机器学习",
+        "NLP"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "TypeScript",
+        "机器学习",
+        "NLP"
+      ],
+      "gt_required": [
+        "NLP",
+        "机器学习"
+      ],
+      "gt_all": [
+        "NLP",
+        "机器学习",
+        "TypeScript"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E171",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5601000011665747,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Docker",
+        "Spark",
+        "Flink"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Docker",
+        "Spark",
+        "Flink"
+      ],
+      "gt_required": [
+        "Spark",
+        "Flink"
+      ],
+      "gt_all": [
+        "Spark",
+        "Flink",
+        "Docker"
+      ],
+      "match_score": 78,
+      "needs_human_review": true
+    },
+    {
+      "id": "E172",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.48910000077739824,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "FastAPI",
+        "Axure",
+        "Figma"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "FastAPI",
+        "Axure",
+        "Figma"
+      ],
+      "gt_required": [
+        "Figma",
+        "Axure"
+      ],
+      "gt_all": [
+        "Figma",
+        "Axure",
+        "FastAPI"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E173",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5529999998543644,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "消息队列",
+        "项目管理",
+        "爬虫"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "消息队列",
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_required": [
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_all": [
+        "项目管理",
+        "爬虫",
+        "消息队列"
+      ],
+      "match_score": 70,
+      "needs_human_review": true
+    },
+    {
+      "id": "E174",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6297999989328673,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "数据分析"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "数据分析"
+      ],
+      "match_score": 93,
+      "needs_human_review": false
+    },
+    {
+      "id": "E175",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5922000000282424,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Go",
+        "React",
+        "Axure"
+      ],
+      "pred_preferred": [
+        "NLP"
+      ],
+      "pred_all": [
+        "Go",
+        "React",
+        "Axure",
+        "NLP"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "Axure"
+      ],
+      "match_score": 82,
+      "needs_human_review": true
+    },
+    {
+      "id": "E176",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5608999999822117,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "Java",
+        "机器学习"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "Java",
+        "机器学习"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "Java"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E177",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5666999986715382,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Vue"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Vue"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Vue"
+      ],
+      "match_score": 63,
+      "needs_human_review": true
+    },
+    {
+      "id": "E178",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7342999997490551,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kafka",
+        "Kubernetes",
+        "Linux"
+      ],
+      "pred_preferred": [
+        "Go"
+      ],
+      "pred_all": [
+        "Kafka",
+        "Kubernetes",
+        "Linux",
+        "Go"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "Kafka"
+      ],
+      "match_score": 96,
+      "needs_human_review": false
+    },
+    {
+      "id": "E179",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.699799998983508,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Spring",
+        "微服务",
+        "Flask"
+      ],
+      "pred_preferred": [
+        "Java"
+      ],
+      "pred_all": [
+        "Spring",
+        "微服务",
+        "Flask",
+        "Java"
+      ],
+      "gt_required": [
+        "Flask",
+        "Spring"
+      ],
+      "gt_all": [
+        "Flask",
+        "Spring",
+        "微服务"
+      ],
+      "match_score": 49,
+      "needs_human_review": false
+    },
+    {
+      "id": "E180",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.574199999391567,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "消息队列",
+        "机器学习",
+        "PyTorch"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "消息队列",
+        "机器学习",
+        "PyTorch"
+      ],
+      "gt_required": [
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_all": [
+        "消息队列",
+        "PyTorch",
+        "机器学习"
+      ],
+      "match_score": 70,
+      "needs_human_review": true
+    },
+    {
+      "id": "E181",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5751999997301027,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "机器学习",
+        "NLP",
+        "Figma"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "机器学习",
+        "NLP",
+        "Figma"
+      ],
+      "gt_required": [
+        "NLP",
+        "机器学习"
+      ],
+      "gt_all": [
+        "NLP",
+        "机器学习",
+        "Figma"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    },
+    {
+      "id": "E182",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5870000004506437,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Spark",
+        "Flink",
+        "OCR"
+      ],
+      "pred_preferred": [
+        "数据分析"
+      ],
+      "pred_all": [
+        "Spark",
+        "Flink",
+        "OCR",
+        "数据分析"
+      ],
+      "gt_required": [
+        "Spark",
+        "Flink"
+      ],
+      "gt_all": [
+        "Spark",
+        "Flink",
+        "OCR"
+      ],
+      "match_score": 75,
+      "needs_human_review": true
+    },
+    {
+      "id": "E183",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5163000005268259,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "React",
+        "Axure",
+        "Figma"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "React",
+        "Axure",
+        "Figma"
+      ],
+      "gt_required": [
+        "Figma",
+        "Axure"
+      ],
+      "gt_all": [
+        "Figma",
+        "Axure",
+        "React"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E184",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5587999985436909,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "项目管理",
+        "爬虫"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Redis",
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_required": [
+        "项目管理",
+        "爬虫"
+      ],
+      "gt_all": [
+        "项目管理",
+        "爬虫",
+        "Redis"
+      ],
+      "match_score": 70,
+      "needs_human_review": true
+    },
+    {
+      "id": "E185",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6348000006255461,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "Nginx"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "Nginx"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "Nginx"
+      ],
+      "match_score": 93,
+      "needs_human_review": false
+    },
+    {
+      "id": "E186",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.571700000364217,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Spring",
+        "Go",
+        "React"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spring",
+        "Go",
+        "React"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "Spring"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E187",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5259000008663861,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "NLP"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "NLP"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "NLP"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E188",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.588400000196998,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Hadoop"
+      ],
+      "pred_preferred": [
+        "NLP"
+      ],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Hadoop",
+        "NLP"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Hadoop"
+      ],
+      "match_score": 62,
+      "needs_human_review": true
+    },
+    {
+      "id": "E189",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6642999996984145,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kubernetes",
+        "Linux",
+        "爬虫"
+      ],
+      "pred_preferred": [
+        "机器学习"
+      ],
+      "pred_all": [
+        "Kubernetes",
+        "Linux",
+        "爬虫",
+        "机器学习"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "爬虫"
+      ],
+      "match_score": 96,
+      "needs_human_review": false
+    },
+    {
+      "id": "E190",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5767000002379064,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "FastAPI",
+        "Go",
+        "SQL"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "FastAPI",
+        "Go",
+        "SQL"
+      ],
+      "gt_required": [
+        "SQL",
+        "FastAPI"
+      ],
+      "gt_all": [
+        "SQL",
+        "FastAPI",
+        "Go"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E191",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5165999991731951,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "不推荐",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Spring",
+        "MySQL",
+        "Flask"
+      ],
+      "pred_preferred": [
+        "Go"
+      ],
+      "pred_all": [
+        "Spring",
+        "MySQL",
+        "Flask",
+        "Go"
+      ],
+      "gt_required": [
+        "Flask",
+        "Spring"
+      ],
+      "gt_all": [
+        "Flask",
+        "Spring",
+        "MySQL"
+      ],
+      "match_score": 49,
+      "needs_human_review": false
+    },
+    {
+      "id": "E192",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5999999993946403,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "消息队列",
+        "Linux",
+        "PyTorch"
+      ],
+      "pred_preferred": [
+        "Python"
+      ],
+      "pred_all": [
+        "消息队列",
+        "Linux",
+        "PyTorch",
+        "Python"
+      ],
+      "gt_required": [
+        "消息队列",
+        "PyTorch"
+      ],
+      "gt_all": [
+        "消息队列",
+        "PyTorch",
+        "Linux"
+      ],
+      "match_score": 69,
+      "needs_human_review": true
+    },
+    {
+      "id": "E193",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.9136999997281237,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Flask",
+        "机器学习",
+        "NLP"
+      ],
+      "pred_preferred": [
+        "Java"
+      ],
+      "pred_all": [
+        "Flask",
+        "机器学习",
+        "NLP",
+        "Java"
+      ],
+      "gt_required": [
+        "NLP",
+        "机器学习"
+      ],
+      "gt_all": [
+        "NLP",
+        "机器学习",
+        "Flask"
+      ],
+      "match_score": 96,
+      "needs_human_review": false
+    },
+    {
+      "id": "E194",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7298999989870936,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Spark",
+        "Flink",
+        "TensorFlow"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Spark",
+        "Flink",
+        "TensorFlow"
+      ],
+      "gt_required": [
+        "Spark",
+        "Flink"
+      ],
+      "gt_all": [
+        "Spark",
+        "Flink",
+        "TensorFlow"
+      ],
+      "match_score": 78,
+      "needs_human_review": true
+    },
+    {
+      "id": "E195",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5151999994268408,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "Flink",
+        "Axure",
+        "Figma"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Flink",
+        "Axure",
+        "Figma"
+      ],
+      "gt_required": [
+        "Figma",
+        "Axure"
+      ],
+      "gt_all": [
+        "Figma",
+        "Axure",
+        "Flink"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E196",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.7379999988188501,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Java",
+        "Spring Boot",
+        "Python"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Java",
+        "Spring Boot",
+        "Python"
+      ],
+      "gt_required": [
+        "Java",
+        "Spring Boot"
+      ],
+      "gt_all": [
+        "Java",
+        "Spring Boot",
+        "Python"
+      ],
+      "match_score": 93,
+      "needs_human_review": false
+    },
+    {
+      "id": "E197",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5935999997745967,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "gt_required": [
+        "Go",
+        "React"
+      ],
+      "gt_all": [
+        "Go",
+        "React",
+        "JavaScript"
+      ],
+      "match_score": 85,
+      "needs_human_review": true
+    },
+    {
+      "id": "E198",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.5967999986751238,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "不推荐",
+      "pred_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "pred_preferred": [
+        "Kubernetes"
+      ],
+      "pred_all": [
+        "TypeScript",
+        "JavaScript",
+        "Kubernetes"
+      ],
+      "gt_required": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "gt_all": [
+        "TypeScript",
+        "JavaScript",
+        "Kubernetes"
+      ],
+      "match_score": 56,
+      "needs_human_review": false
+    },
+    {
+      "id": "E199",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6279999997786945,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "待定",
+      "gt_conclusion": "待定",
+      "pred_required": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "gt_required": [
+        "Redis",
+        "Kafka"
+      ],
+      "gt_all": [
+        "Redis",
+        "Kafka",
+        "Django"
+      ],
+      "match_score": 63,
+      "needs_human_review": true
+    },
+    {
+      "id": "E200",
+      "ok": true,
+      "source": "constructed",
+      "group": "template",
+      "excluded": false,
+      "error": "",
+      "latency_ms": 0.6085000004532048,
+      "tokens": 0,
+      "llm_calls": 0,
+      "cache_hit": false,
+      "pred_conclusion": "推荐",
+      "gt_conclusion": "推荐",
+      "pred_required": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "pred_preferred": [],
+      "pred_all": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "gt_required": [
+        "Kubernetes",
+        "Linux"
+      ],
+      "gt_all": [
+        "Kubernetes",
+        "Linux",
+        "PyTorch"
+      ],
+      "match_score": 100,
+      "needs_human_review": false
+    }
+  ]
+}
