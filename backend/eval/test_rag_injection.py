@@ -114,7 +114,7 @@ def part_a():
     print("=== A. 注入存在且格式正确 ===")
     skills = parse_jd(JD)["skills"]
     use = (skills["required"] + skills["preferred"])[:5]
-    prompt, stats, out = call(use)
+    prompt, stats, out = call(use, enabled="1")
     ok = RAG_MARK in prompt
     lines = [ln for ln in prompt.splitlines() if ln.startswith("- ")]
     print("  检索技能: %s" % use)
@@ -129,7 +129,7 @@ def part_a():
 def part_b():
     print("\n=== B. 追加而非替换（抠掉注入块后应逐字等于无 RAG 的 prompt）===")
     skills = parse_jd(JD)["skills"]["required"]
-    p_rag, _, _ = call(skills)
+    p_rag, _, _ = call(skills, enabled="1")
     p_plain, _, _ = call(None)
     ok = RAG_MARK not in p_plain
     print("  无 rag_skills 时无注入块: %s" % ("✔" if ok else "✘"))
@@ -162,7 +162,7 @@ def part_c():
 def part_d():
     print("\n=== D. 降级：检索抛异常不得影响生成 ===")
     skills = parse_jd(JD)["skills"]["required"]
-    prompt, stats, out = call(skills, break_inject=True)
+    prompt, stats, out = call(skills, enabled="1", break_inject=True)
     ok = (RAG_MARK not in prompt) and bool(out) and "rag_error" in stats
     print("  无注入: %s；仍返回结果: %s；stats.rag_error=%s %s" % (
         RAG_MARK not in prompt, bool(out), stats.get("rag_error"), "✔" if ok else "✘"))
@@ -200,11 +200,23 @@ def part_e():
 def part_f():
     print("\n=== F. stats 诊断字段（供 R7/R8 与 trace 使用）===")
     skills = parse_jd(JD)["skills"]["required"]
-    _, stats, _ = call(skills)
+    _, stats, _ = call(skills, enabled="1")
     need = ["rag_chars", "rag_chunk_ids", "rag_modes"]
     ok = all(k in stats for k in need)
     print("  %s %s" % ({k: stats.get(k) for k in need}, "✔" if ok else "✘"))
     print("  F 结果: %s" % ("PASS" if ok else "FAIL"))
+    return ok
+
+
+def part_g():
+    """R7 结论落地：默认（不设 RAG_ENABLED）必须**不注入**，避免悄悄回到被回滚的行为。"""
+    print("\n=== G. 默认关闭（R7 回滚后的线上行为）===")
+    skills = parse_jd(JD)["skills"]["required"]
+    prompt, stats, out = call(skills, enabled=None)
+    ok = (RAG_MARK not in prompt) and ("rag_chars" not in stats) and bool(out)
+    print("  无注入: %s；无 rag stats: %s；仍正常返回: %s %s" % (
+        RAG_MARK not in prompt, "rag_chars" not in stats, bool(out), "✔" if ok else "✘"))
+    print("  G 结果: %s" % ("PASS" if ok else "FAIL"))
     return ok
 
 
@@ -216,7 +228,7 @@ if __name__ == "__main__":
     _trace.record = lambda *a, **k: None
     _database.save_history = lambda *a, **k: None
 
-    a, b, c, d, e, f = part_a(), part_b(), part_c(), part_d(), part_e(), part_f()
-    allok = all([a, b, c, d, e, f])
+    a, b, c, d, e, f, g = part_a(), part_b(), part_c(), part_d(), part_e(), part_f(), part_g()
+    allok = all([a, b, c, d, e, f, g])
     print("\n总结果:", "全部通过 ✅" if allok else "存在失败 ❌")
     sys.exit(0 if allok else 1)

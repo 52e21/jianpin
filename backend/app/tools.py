@@ -776,7 +776,8 @@ async def generate_interview_questions(jd_text: str, resume_text: str, stats: di
     rag_skills       → R6 新增：JD 解析出的技能列表。非空时做**只读检索**，把「岗位能力参考」
                        块追加进 prompt；检索不可用/结果为空时完全走原路径（零影响）。
                        约束：只注入面试题生成，**不注入 match_resume**（匹配打分必须可复现）。
-                       开关：环境变量 RAG_ENABLED=0 可整体关闭（用于 A/B 对比）。
+                       开关：RAG_ENABLED=1 才启用。**默认 0（关闭）** —— R7 两轮 A/B 实测
+                       相关性未提升、token +22~31%，已按执行书回滚接线（模块保留）。
     """
     from openai import AsyncOpenAI
 
@@ -845,10 +846,16 @@ async def generate_interview_questions(jd_text: str, resume_text: str, stats: di
         format_req = "只输出问题列表，每个问题一行，用 1. 2. 3. 编号，不要其它内容。"
 
     # ---- R6：只读检索增强（岗位能力参考）----
-    # 设计：检索失败/为空 → rag_block 为空串 → prompt 与加 RAG 之前**逐字一致**（可安全降级）。
+    # 【默认关闭 —— 由 R7 实测结论决定】
+    # 两轮 A/B（同 10 条用例，n=20）：注入后「题目覆盖检索到的能力点」0.33→0.71（提升、可复现），
+    # 但 LLM 盲评 7.50→6.70 / 7.20→6.60（合并均值 -0.70，SD 1.35，t=-2.33，10 降 7 平 3 升），
+    # 同时 token +22%~31%。按执行书 R7「面试题相关性：持平或提升」判定为**未通过**，
+    # 故回滚接线：默认不注入，但**保留整个 RAG 模块**（R1–R5）与开关，便于改设计后复测。
+    # 复现实验 / 改注入设计时：设 RAG_ENABLED=1。
+    # 另：检索失败/为空时 rag_block 为空串 → prompt 与加 RAG 之前**逐字一致**（可安全降级）。
     # 只在这里注入；match_resume / parse_jd 完全不碰（打分与判定必须可复现）。
     rag_block = ""
-    if rag_skills and os.environ.get("RAG_ENABLED", "1") != "0":
+    if rag_skills and os.environ.get("RAG_ENABLED", "0") != "0":
         try:
             from .rag.inject import capability_context_for_skills
 
