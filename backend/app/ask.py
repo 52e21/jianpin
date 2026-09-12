@@ -109,6 +109,63 @@ def should_ask(round_no: int, status: str = "insufficient") -> bool:
     return status == "insufficient" and int(round_no or 0) < ROUND_LIMIT
 
 
+# ---------------------------------------------------------------------------
+# A3：追问生成（1–3 个，规则优先）
+# ---------------------------------------------------------------------------
+# 说明：四个信号 ↔ 四个模板 1:1 对应，规则已能覆盖全部可识别的缺口类型，
+# 因此**不引入 LLM 兜底**（避免无效成本）；若将来加入新信号再补模板即可。
+FIELD_PRIORITY = ("required_skills", "experience_years", "education_level", "responsibilities")
+MAX_QUESTIONS = 3
+
+_TEMPLATES = {
+    "required_skills": "%s的必须技能有哪些？（例如语言、框架、中间件）",
+    "experience_years": "%s需要几年相关经验？",
+    "education_level": "%s的学历要求是什么？（本科/硕士，是否接受专升本）",
+    "responsibilities": "%s主要负责什么？（核心职责与业务方向）",
+}
+
+
+def _phrase(field: str, jd_parse: dict | None) -> str:
+    """把模板实例化成"具体"的问题：能识别出岗位名就带上，问题才对 HR 友好。"""
+    pos = ((jd_parse or {}).get("position") or "").strip()
+    head = "「%s」这个岗位" % pos if pos else "这个岗位"
+    return _TEMPLATES[field] % head
+
+
+def generate_questions(result, jd_parse: dict | None = None, limit: int = MAX_QUESTIONS) -> list:
+    """A3：按"缺失字段"生成 1–3 个可回答的追问（纯函数，零 LLM）。
+
+    `result` 可以是 sufficiency() 的返回，也可以直接是缺失字段列表。
+    """
+    if isinstance(result, dict):
+        missing = list(result.get("missing_fields") or [])
+        status = result.get("status", "insufficient")
+    else:
+        missing, status = list(result or []), "insufficient"
+    if status != "insufficient":
+        return []
+    out: list = []
+    for f in FIELD_PRIORITY:
+        if f in missing:
+            q = _phrase(f, jd_parse)
+            if q not in out:
+                out.append(q)
+        if len(out) >= limit:
+            break
+    return out[:limit]
+
+
+def ask_for(jd_text: str, jd_parse: dict | None = None) -> dict:
+    """一步到位：判定 + 生成追问（A2 + A3 的组合入口，供编排层与测试使用）。"""
+    from .tools import parse_jd
+
+    parsed = jd_parse if jd_parse is not None else parse_jd(jd_text or "")
+    suff = sufficiency(parsed, jd_text or "")
+    out = dict(suff)
+    out["questions"] = generate_questions(suff, parsed)
+    return out
+
+
 if __name__ == "__main__":
     # 自检 + 用评测集做阈值校准（不调 LLM）
     import io
@@ -143,7 +200,7 @@ if __name__ == "__main__":
         r = sufficiency(parse_jd(c["jd"]), c["jd"])
         if r["status"] == "insufficient":
             refined += 1
-            refined_ids.append((c["id"], r["missing_fields"], c["jd"][:40]))
+            refined_ids.append((c["id"], r["missing_fields"], c["jd"]))
         if r["doc_rule"]["status"] == "insufficient":
             literal += 1
             if r["status"] == "sufficient":
@@ -155,6 +212,9 @@ if __name__ == "__main__":
     print("    被校准规则避免的误追问（字面会判、其实写了技能）: %d 条" % len(avoided))
     for cid, phrase, jd in avoided[:6]:
         print("      %-6s skill_phrase=%-22s %s" % (cid, phrase[:22], jd))
-    print("    校准后仍判不足的用例：")
+    print("    校准后仍判不足的用例 + 生成的追问（A3）：")
     for cid, miss, jd in refined_ids[:12]:
-        print("      %-6s missing=%-48s %s" % (cid, ",".join(miss), jd))
+        qs = generate_questions({"status": "insufficient", "missing_fields": miss}, parse_jd(jd))
+        print("      %-6s missing=%-46s %s" % (cid, ",".join(miss), jd[:38] or "(空 JD)"))
+        for q in qs:
+            print("             - %s" % q)
