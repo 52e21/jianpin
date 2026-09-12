@@ -7,7 +7,7 @@ from sse_starlette.sse import EventSourceResponse
 
 from .agent import run_agent_with_history, analyze_agent
 from .database import (init_db, fetch_history, delete_history, clear_history,
-                       set_feedback, fetch_history_by_task)
+                       set_feedback, fetch_history_by_task, fetch_ask_session)
 from .upload import MAX_FILE_SIZE, extract_resume
 
 # 第 7 步：反馈接口的受控词表（避免脏数据进库）
@@ -160,6 +160,40 @@ def _extract_conclusion(result_text: str) -> str:
         if f"结论：{c}" in (result_text or ""):
             return c
     return ""
+
+
+@app.get("/api/agent/session/{session_id}")
+def agent_session(session_id: str):
+    """A1（Agent 子模块）：查询某个 session 挂载的追问状态。
+
+    同一 session_id 的多次 /analyze 共享这份状态：追问轮数（round，上限 2）、
+    待回答的追问（pending_questions）、以及 A4 合并后的 JD（merged_jd）。
+    不回传 JD/简历全文，只给长度与预览（避免把用户输入再吐一遍）。
+    """
+    rec = fetch_ask_session(session_id)
+    if rec is None:
+        raise HTTPException(status_code=404, detail="该 session_id 未挂载任何状态")
+
+    pending = rec.get("pending_questions") or ""
+    try:
+        pending_obj = json.loads(pending) if pending else []
+    except Exception:
+        pending_obj = pending
+    return {
+        "session_id": rec.get("session_id"),
+        "tenant_id": rec.get("tenant_id"),
+        "role": rec.get("role"),
+        "round": rec.get("round", 0),
+        "status": rec.get("status", "idle"),
+        "round_limit": 2,
+        "pending_questions": pending_obj,
+        "merged_jd_chars": len(rec.get("merged_jd") or ""),
+        "jd_chars": len(rec.get("jd") or ""),
+        "resume_chars": len(rec.get("resume") or ""),
+        "jd_preview": (rec.get("jd") or "")[:40],
+        "created_at": rec.get("created_at"),
+        "updated_at": rec.get("updated_at"),
+    }
 
 
 @app.post("/api/agent/run")

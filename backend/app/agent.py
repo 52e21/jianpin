@@ -365,6 +365,20 @@ def _save_analyze_history(payload: dict, jd: str, resume: str, job_url,
             job_url=job_url or "",
             task_id=payload.get("task_id", ""),
         )
+        # A1（Agent 子模块）：同一 session_id 共享追问状态。
+        # 只更新本次输入相关字段（jd/resume/role/tenant），**不动** round/status/pending——
+        # A4「补充后重走链路」要靠 round 累加，不能被普通请求重置。
+        try:
+            from .database import upsert_ask_session
+
+            upsert_ask_session(
+                session_id=payload.get("session_id", ""),
+                tenant_id=payload.get("tenant_id", "default"),
+                role=payload.get("role", "hr"),
+                jd=jd, resume=resume, job_url=job_url or "",
+            )
+        except Exception:            # 挂载失败不影响主流程
+            pass
     except Exception as e:
         logger.warning("ANALYZE-SAVE-HISTORY-ERROR %r", e)
 

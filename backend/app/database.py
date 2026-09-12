@@ -4,6 +4,7 @@
 backend/data/history.db，供前端历史记录页查询。
 """
 
+import json
 import sqlite3
 from datetime import datetime
 from pathlib import Path
@@ -73,6 +74,29 @@ def init_db():
         )
         conn.execute("CREATE INDEX IF NOT EXISTS idx_trace_id ON trace_events(trace_id)")
         conn.execute("CREATE INDEX IF NOT EXISTS idx_trace_task ON trace_events(task_id)")
+
+        # ---- A1（Agent 子模块）：追问会话状态，按 session_id 挂载 ----
+        # 执行书 A1 要求「后端用 session_id 挂载追问状态，能查到」；A2–A5 复用同一张表：
+        # status 记录会话阶段，round 记录追问轮数（上限 2），pending_questions 存待回答的追问。
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS ask_sessions (
+                session_id TEXT PRIMARY KEY,
+                tenant_id TEXT DEFAULT 'default',
+                role TEXT DEFAULT 'hr',
+                jd TEXT DEFAULT '',
+                resume TEXT DEFAULT '',
+                job_url TEXT DEFAULT '',
+                round INTEGER DEFAULT 0,
+                status TEXT DEFAULT 'idle',
+                pending_questions TEXT DEFAULT '',
+                merged_jd TEXT DEFAULT '',
+                created_at TEXT,
+                updated_at TEXT
+            )
+            """
+        )
+        conn.execute("CREATE INDEX IF NOT EXISTS idx_ask_sessions_updated ON ask_sessions(updated_at)")
 
 
 def save_history(task, result, llm_calls, total_tokens, cache_hit, duration_ms, job_url="", task_id=""):
@@ -199,3 +223,57 @@ def count_traces(trace_id=None) -> int:
             return int(conn.execute(
                 "SELECT COUNT(*) FROM trace_events WHERE trace_id = ?", (trace_id,)).fetchone()[0])
         return int(conn.execute("SELECT COUNT(*) FROM trace_events").fetchone()[0])
+
+
+# ---------------------------------------------------------------------------
+# A1（Agent 子模块）：追问会话状态
+# ---------------------------------------------------------------------------
+ASK_STATUSES = ("idle", "insufficient", "answered", "done")
+
+
+def upsert_ask_session(session_id, tenant_id="default", role="hr", jd=None, resume=None,
+                       job_url=None, status=None, round_no=None, pending_questions=None,
+                       merged_jd=None) -> dict:
+    """按 session_id 挂载/更新追问状态；**只更新显式传入的字段**（None = 不动）。
+
+    这是 A1 的核心：同一个 session_id 的多次请求共享一份状态（追问轮数、待答问题、合并后的 JD）。
+    """
+    session_id = (session_id or "").strip()
+    if not session_id:
+        raise ValueError("session_id 不能为空")
+    now = datetime.now().isoformat(timespec="seconds")
+    with get_conn() as conn:
+        conn.execute(
+            "INSERT OR IGNORE INTO ask_sessions (session_id, created_at, updated_at) VALUES (?, ?, ?)",
+            (session_id, now, now))
+        sets, args = ["updated_at = ?"], [now]
+        for col, val in (("tenant_id", tenant_id), ("role", role), ("jd", jd), ("resume", resume),
+                         ("job_url", job_url), ("status", status), ("merged_jd", merged_jd)):
+            if val is not None:
+                sets.append(col + " = ?")
+                args.append(val)
+        if round_no is not None:
+            sets.append("round = ?")
+            args.append(int(round_no))
+        if pending_questions is not None:
+            sets.append("pending_questions = ?")
+            args.append(pending_questions if isinstance(pending_questions, str)
+                        else json.dumps(pending_questions, ensure_ascii=False))
+        args.append(session_id)
+        conn.execute("UPDATE ask_sessions SET " + ", ".join(sets) + " WHERE session_id = ?", tuple(args))
+        row = conn.execute("SELECT * FROM ask_sessions WHERE session_id = ?", (session_id,)).fetchone()
+    return dict(row) if row else {}
+
+
+def fetch_ask_session(session_id):
+    """按 session_id 查询追问状态（None 表示没有挂载过）。"""
+    with get_conn() as conn:
+        row = conn.execute("SELECT * FROM ask_sessions WHERE session_id = ?",
+                           ((session_id or "").strip(),)).fetchone()
+    return dict(row) if row else None
+
+
+def delete_ask_session(session_id) -> bool:
+    with get_conn() as conn:
+        cur = conn.execute("DELETE FROM ask_sessions WHERE session_id = ?", ((session_id or "").strip(),))
+        return cur.rowcount > 0
