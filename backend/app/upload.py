@@ -31,9 +31,21 @@ def extract_docx(content: bytes) -> str:
 
 
 def extract_resume(filename: str, content: bytes) -> str:
-    if filename.lower().endswith(".pdf"):
+    """按后缀分派提取逻辑。
+
+    第 15 步：与前端契约对齐 —— 前端 accept 已收紧为 .pdf/.docx。
+    对旧版 .doc 给出可操作的提示（python-docx 只支持 OOXML 的 .docx，
+    老的 .doc 二进制格式需要额外转换工具，本项目不引入）。
+    """
+    name = (filename or "").lower()
+    if name.endswith(".pdf"):
         return extract_pdf(content)
-    elif filename.lower().endswith(".docx"):
+    elif name.endswith(".docx"):
         return extract_docx(content)
+    elif name.endswith(".doc"):
+        raise HTTPException(
+            status_code=400,
+            detail="不支持旧版 .doc 格式，请用 Word「另存为 .docx」后重新上传",
+        )
     else:
         raise HTTPException(status_code=400, detail="仅支持 PDF 或 DOCX 文件")

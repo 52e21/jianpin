@@ -5,6 +5,8 @@
 """
 
 import re
+import time
+from functools import lru_cache
 
 # ---------------------------------------------------------------------------
 # 预置知识库（可扩展）
@@ -27,6 +29,32 @@ SKILL_KEYWORDS = [
 ]
 
 EDUCATION_LEVELS = ["博士", "硕士", "本科", "大专"]
+
+# ---------------------------------------------------------------------------
+# 推荐口径（已拍定，2026-09-12）
+# ---------------------------------------------------------------------------
+# 需求文档 §5：`匹配度 ≥80 且缺失必须技能 ≤1 → 推荐`。
+# 即**允许缺 1 项必须技能仍推荐**，因为技能维度只占 40% 权重，其余维度（经验/学历/软技能/加分）
+# 足以支撑 ≥80 分。
+#
+# 决策记录：
+#   - 短期**维持**该口径 —— 评测集里 21 条标注（annotator=spec_derived）依赖它；
+#     改口径会连带触发阈值调整 + 分数重算 + 基线重跑。
+#   - "必须技能一项都不能缺"是**产品决策**，已单独立项评估，**不为了评测集变绿而改规范**。
+#   - 修改此常量必须同步更新 `eval/test_recommendation_policy.py`（口径闸门）与升级报告。
+MAX_MISSING_REQUIRED_FOR_RECOMMEND = 1
+
+# 技能别名表：同一技术的不同写法 → 归一后的规范名（必须存在于 SKILL_KEYWORDS 中）
+# 只收录"同一技术的不同写法"，不收录能力标签（如"自动化测试""容器化"），
+# 也不为了迎合评测集而扩充技能覆盖范围（那是"词表扩容"事项，由业务定位决定）。
+SKILL_ALIASES = {
+    "k8s": "Kubernetes",
+    "k8s集群": "Kubernetes",
+}
+# 反查表：规范名 → 该技能的其它写法（用于简历侧的命中检测）
+SKILL_ALIAS_REVERSE: dict = {}
+for _alias, _canonical in SKILL_ALIASES.items():
+    SKILL_ALIAS_REVERSE.setdefault(_canonical, []).append(_alias)
 
 EDUCATION_MAJORS = [
     "计算机", "软件工程", "电子信息", "通信", "数学", "统计", "自动化",
@@ -79,6 +107,117 @@ def _find_first(text: str, keywords) -> str:
         if k in text:
             return k
     return ""
+
+
+# ---------------------------------------------------------------------------
+# 事项 2：技能名匹配（写法归一 + 词边界）
+# ---------------------------------------------------------------------------
+# 分两层（与业务确认的口径一致）：
+#   1) **写法变体**用归一化函数机械处理 —— 去空白与 . - _ / 并转小写。
+#      Spring Boot / SpringBoot / spring-boot / SPRING BOOT 自动归一到同一形态，
+#      不需要为每种写法枚举别名。
+#   2) **缩写与跨技术别名**（k8s→Kubernetes、js→JavaScript 等）仍用 SKILL_ALIASES 显式枚举。
+#
+# 不能用 \b：C++ / C# / Node.js / A/B测试 含符号，\b 在 + # . / 之后不成立，
+# 会导致这些技能永远匹配不上。改用语义化边界（见 _edge_ok）。
+#
+# 归一化的关键难点：去掉分隔符后就无法区分 "JavaScript" 与 "Java Script"，
+# 因此这里保留"归一化下标 → 原文下标"的映射，**词边界始终在原文上判定**。
+_SEP_RE = re.compile(r"[\s.\-_/]")
+_ASCII_ALNUM_RE = re.compile(r"[A-Za-z0-9]")
+
+
+def _norm_skill(s: str) -> str:
+    """写法归一：去掉空白与 . - _ / 并转小写。"""
+    return _SEP_RE.sub("", (s or "").lower())
+
+
+def _norm_index(lower_text: str):
+    """返回 (归一化文本, 位置映射)；位置映射把归一化下标映射回原文下标。"""
+    chars, pos = [], []
+    for i, ch in enumerate(lower_text):
+        if _SEP_RE.fullmatch(ch):
+            continue
+        chars.append(ch)
+        pos.append(i)
+    return "".join(chars), tuple(pos)
+
+
+@lru_cache(maxsize=64)
+def _norm_index_cached(lower_text: str):
+    """带缓存的归一化索引。
+
+    同一个文本会被 ~70 个技能名各查一次（简历侧还更多），不缓存的话每查一次就重建
+    索引 → 实测 P50 从 0.2ms 涨到 3.8ms。缓存后回到亚毫秒级。
+    maxsize=64 足以覆盖"一次分析里的 JD + 简历"，且不会无限增长。
+    """
+    return _norm_index(lower_text)
+
+
+def _edge_ok(lower_text: str, start: int, end: int, norm_token: str) -> bool:
+    """词边界判定（在原文坐标上）。
+
+    - 归一化技能名以 ASCII 字母/数字开头 → 左侧原文不能是 ASCII 字母/数字
+      （拦 "Django" 里的 "go"、"MySQL" 里的 "SQL"）
+    - 归一化技能名以 ASCII 字母/数字结尾 → 右侧原文不能是 ASCII 字母/数字
+      （拦 "JavaScript" 里的 "Java"；而 "C++" 归一后以 '+' 结尾，不做右检查，故 "C++11" 仍命中）
+    """
+    head, tail = norm_token[:1], norm_token[-1:]
+    if head.isascii() and head.isalnum() and start > 0 and _ASCII_ALNUM_RE.match(lower_text[start - 1]):
+        return False
+    if tail.isascii() and tail.isalnum() and end < len(lower_text) and _ASCII_ALNUM_RE.match(lower_text[end]):
+        return False
+    return True
+
+
+def _find_spans(lower_text: str, token: str) -> list:
+    """返回 token 在 lower_text 中所有满足词边界的出现区间 [(start, end), ...]（原文坐标）。
+
+    写法变体（空格/点/连字符差异）会被归一化后匹配到，但边界仍按原文判定。
+    """
+    norm_token = _norm_skill(token)
+    if not norm_token:
+        return []
+    norm_text, pos = _norm_index_cached(lower_text)
+    out, idx = [], 0
+    while True:
+        p = norm_text.find(norm_token, idx)
+        if p < 0:
+            return out
+        start = pos[p]
+        end = pos[p + len(norm_token) - 1] + 1
+        if _edge_ok(lower_text, start, end, norm_token):
+            out.append((start, end))
+        idx = p + 1
+
+
+def _find_all(lower_text: str, token: str) -> list:
+    """只返回起始位置（保留旧接口，供断言/调试使用）。"""
+    return [s for s, _ in _find_spans(lower_text, token)]
+
+
+def _token_hits(lower_text: str, token: str) -> bool:
+    """是否存在满足词边界的出现（等价于原 `token in text` 的严格版）。"""
+    if not token:
+        return False
+    if token in lower_text:                      # 快速路径：原文直接命中
+        return bool(_find_spans(lower_text, token))
+    return bool(_find_spans(lower_text, token))  # 写法变体路径
+
+
+def _is_covered_by(short: str, long: str, lower_text: str) -> bool:
+    """short 的每一次出现是否都被 long 的出现区间覆盖（即 short 从不独立成词）。
+
+    用于子串去重：只有完全被覆盖才算冗余（Spring 在 Spring Boot 里），
+    否则保留（Java 在 "精通 Java，熟悉 JavaScript" 里必须保留）。
+    """
+    long_spans = _find_spans(lower_text, long)
+    if not long_spans:
+        return False
+    for ss, se in _find_spans(lower_text, short):
+        if not any(a <= ss and se <= b for a, b in long_spans):
+            return False
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -154,13 +293,28 @@ def parse_jd(jd_text: str) -> dict:
     # ---------- 3.3 技能要求：必须 vs 优先 ----------
     all_skills = []
     for s in SKILL_KEYWORDS:
-        if s.lower() in lower:
+        # 事项 2：加词边界，避免 "JavaScript" 命中 "Java"、"Django" 命中 "go"
+        if _find_all(lower, s):
             all_skills.append(s)
-    # 子串去重：若某技能是另一更长已命中技能的子串则丢弃（如 Spring⊂Spring Boot、SQL⊂MySQL）
+    # 别名归一（事项 1 附带修复）：中英写法差异不算两个技能 —— 例如 JD 写 "K8S"、
+    # 简历写 "k8s 集群运维"，都必须归一到 Kubernetes，否则会出现"JD 无可评分维度"的假象。
+    # 注意：别名表只收录**同一技术的不同写法**；像"自动化测试""容器化"这类**能力标签**
+    # 不进技能词表（由业务定位决定，不因评测集而加）。
+    for alias, canonical in SKILL_ALIASES.items():
+        if _find_all(lower, alias) and canonical not in all_skills:
+            all_skills.append(canonical)
+    # 子串去重（事项 2 同步收紧）：
+    # 原规则是"短技能名是长技能名的子串就丢弃"，用来合并 Spring⊂Spring Boot、SQL⊂MySQL。
+    # 但加了词边界后 Java 与 JavaScript 是**两个不同技能**，原规则会把 Java 误删。
+    # 新规则：只有当短技能名的**每一次出现都被长技能名的出现覆盖**（即它从不独立成词）时才算冗余。
+    #   精通 Java，熟悉 JavaScript → Java 有独立出现 → 两者都保留 ✔
+    #   精通 Spring Boot          → Spring 只出现在 Spring Boot 内部 → 丢弃 Spring ✔
     deduped_skills = []
     for s in all_skills:
         s_low = s.lower()
-        if any(s_low in other.lower() and s != other for other in all_skills):
+        if any(s_low in other.lower() and s != other and _is_covered_by(s, other, lower)
+               for other in all_skills):
+            continue
             continue
         deduped_skills.append(s)
     all_skills = deduped_skills
@@ -170,20 +324,14 @@ def parse_jd(jd_text: str) -> dict:
     strong_words = ("必须", "精通", "熟练", "扎实", "硬性", "要求掌握", "必备")
     weak_words = ("优先", "加分", "了解", "熟悉", "掌握更佳", "更好", "如有")
     for s in all_skills:
-        s_low = s.lower()
         is_req, is_pref = False, False
-        start = 0
-        while True:
-            idx = lower.find(s_low, start)
-            if idx < 0:
-                break
-            ctx = text[max(0, idx - 25): idx + len(s) + 25]
+        for (start, end) in _find_spans(lower, s):
+            ctx = text[max(0, start - 25): end + 25]
             if any(w in ctx for w in strong_words):
                 is_req = True
                 break
             if any(w in ctx for w in weak_words):
                 is_pref = True
-            start = idx + len(s_low)
         if is_req:
             required.append(s)
         else:
@@ -289,24 +437,59 @@ def parse_jd(jd_text: str) -> dict:
 # 综合匹配度 = 技能40% + 经验25% + 学历15% + 软技能10% + 加分项10%
 # ---------------------------------------------------------------------------
 def _contains_skill(resume_text: str, skill: str) -> bool:
-    """技能命中检测（含否定语境排除）。"""
-    lower = resume_text.lower()
-    s = skill.lower()
-    neg = ("不会", "不懂", "没有", "未接触", "未使用", "没接触", "没用过", "不熟悉",
-           "不了解", "缺乏", "缺少", "只有了解", "仅了解", "了解不多", "了解一点",
-           "未掌握", "不精通", "刚学", "在学", "学习中", "未曾", "从未", "没用",
-           "没怎么用", "不太会", "不怎么会")
-    idx = 0
-    while True:
-        pos = lower.find(s, idx)
-        if pos < 0:
-            return False
-        before = lower[max(0, pos - 12):pos]
-        after = lower[pos + len(s):pos + len(s) + 12]
-        if any((n in before) or (n in after) for n in neg):
-            idx = pos + len(s)
+    """技能命中检测（含否定语境排除 + 别名归一）。
+
+    别名归一很关键：JD 侧把 "K8S" 归一到 Kubernetes 后，简历侧也必须能用 "k8s" 命中，
+    否则会出现"JD 识别出了技能、简历却永远匹配不上"的单边错配。
+    """
+    for candidate in [skill] + SKILL_ALIAS_REVERSE.get(skill, []):
+        if _contains_token(resume_text, candidate):
+            return True
+    return False
+
+
+# 否定词表与"小句边界"标点（事项 3 复核时新增：窗口必须按小句截断）
+_NEGATION_WORDS = ("不会", "不懂", "没有", "未接触", "未使用", "没接触", "没用过", "不熟悉",
+                   "不了解", "缺乏", "缺少", "只有了解", "仅了解", "了解不多", "了解一点",
+                   "未掌握", "不精通", "刚学", "在学", "学习中", "未曾", "从未", "没用",
+                   "没怎么用", "不太会", "不怎么会")
+# 只把真正的标点当小句边界。**空格不算**——"不会 React" 是合法的相邻否定，
+# 若把空格当边界，会漏掉这类否定（我在诊断脚本第一版就犯过这个错）。
+_CLAUSE_PUNCT = "，。；;、,！!？?：:（）()\n"
+
+
+def _clause_bounded(window: str, from_left: bool) -> str:
+    """把窗口截断到同一小句内：左侧窗口取最后一个标点之后，右侧窗口取第一个标点之前。"""
+    if from_left:
+        for i in range(len(window) - 1, -1, -1):
+            if window[i] in _CLAUSE_PUNCT:
+                return window[i + 1:]
+        return window
+    for i, ch in enumerate(window):
+        if ch in _CLAUSE_PUNCT:
+            return window[:i]
+    return window
+
+
+def _contains_token(resume_text: str, token: str) -> bool:
+    """单个词形的出现检测（带词边界 + 否定语境窗口）。
+
+    - 事项 2：用 _find_spans 取代裸 find —— "精通 JavaScript" 不会被判为命中 Java。
+    - 事项 3 复核：否定窗口**按小句截断**。原实现取前后各 12 字符、会跨过标点，于是
+      "精通 Java 与 Spring Boot，不熟悉 MySQL" 里的 Spring Boot 被邻居的"不熟悉"误伤，
+      本应命中的技能被判缺失（实测影响 15 条用例、一致率 63.0%→70.5%）。
+    """
+    lower = (resume_text or "").lower()
+    s = (token or "").lower()
+    if not s:
+        return False
+    for pos, end in _find_spans(lower, s):
+        before = _clause_bounded(lower[max(0, pos - 12):pos], from_left=True)
+        after = _clause_bounded(lower[end:end + 12], from_left=False)
+        if any((n in before) or (n in after) for n in _NEGATION_WORDS):
             continue
         return True
+    return False
 
 
 def match_resume(jd_result: dict, resume_text: str) -> dict:
@@ -402,7 +585,25 @@ def match_resume(jd_result: dict, resume_text: str) -> dict:
     }
     total_w = sum(weights.values())
     if total_w <= 0:
-        match_score = 100
+        # 事项 1：JD 未识别出任何可评分维度（技能/经验/学历/软技能/加分全为空）。
+        # 原实现直接给 100 分，于是走到"≥80 且缺失≤1 → 推荐"，产出
+        # "匹配度 100% / 命中 无 / 核心要求全覆盖"这种自相矛盾的结论（真实历史数据里出现过）。
+        # 现在返回 0 分 + 显式标记，由编排层判定为"待定（建议人工复核）"。
+        return {
+            "match_score": 0,
+            "matched_skills": [],
+            "missing_skills": [],
+            "summary": "JD 未识别出可评分维度，建议人工复核",
+            # 供编排层判定用的机器标记
+            "no_scorable_dimension": True,
+            # 同时按待办要求给出直接可用的结论字段（additive，不影响既有读取方）
+            "conclusion": "待定",
+            "reason": "JD 未识别出可评分维度，建议人工复核",
+            "dimensions": {
+                "skill_score": 0, "exp_score": 0, "edu_score": 0,
+                "soft_score": 0, "bonus_score": 0,
+            },
+        }
     else:
         # 归一化权重
         scores = {
@@ -447,29 +648,182 @@ def match_resume(jd_result: dict, resume_text: str) -> dict:
 
 
 # ---------------------------------------------------------------------------
+# 第 6 步：结构化上下文构造（替代"JD 全文 + 简历全文"直塞）
+# ---------------------------------------------------------------------------
+_EXP_DATE_RE = re.compile(r"((19|20)\d{2}\s*[年./\-]|至今|现在|present)", re.I)
+_EXP_ANCHOR_WORDS = ("公司", "科技", "有限", "集团", "研究院", "事业部", "部门", "中心",
+                     "工程师", "开发", "经理", "专员", "设计师", "分析师", "实习生",
+                     "任职", "工作经历", "项目经验", "项目", "负责")
+_EXP_SECTION_STOP = ("教育背景", "教育经历", "学历", "技能", "专业技能", "自我评价",
+                     "获奖", "证书", "兴趣爱好", "个人信息")
+_EXP_BLOCK_MAX_CHARS = 180
+
+
+def extract_experiences(resume_text: str, max_n: int = 3) -> list:
+    """从简历文本中规则抽取最多 max_n 段"核心经历"。
+
+    策略（三级兜底，保证一定能返回列表）：
+      1) 锚点扫描：含年份区间/「至今」或含公司/职位关键词的行作为锚点，
+         把锚点行及其后若干行合并为一段，遇到下一个锚点或章节标题（技能/教育背景…）时收束；
+      2) 若无锚点：按空行分块，取最长的 max_n 块；
+      3) 若仍无：按句号切分，取最长的 max_n 句。
+    每段截断到 180 字，避免把 token 省回来的又花回去。
+    """
+    text = (resume_text or "").replace("\r\n", "\n").replace("\r", "\n")
+    if not text.strip():
+        return []
+
+    lines = [ln.strip() for ln in text.split("\n")]
+    blocks, cur = [], []
+    MAX_LINES_PER_BLOCK = 4
+
+    def flush():
+        if cur:
+            blocks.append(" ".join(cur).strip())
+            cur.clear()
+
+    for ln in lines:
+        if not ln:
+            flush()
+            continue
+        if any(s in ln for s in _EXP_SECTION_STOP) and len(ln) <= 12:
+            flush()
+            continue
+        is_anchor = bool(_EXP_DATE_RE.search(ln)) or any(w in ln for w in _EXP_ANCHOR_WORDS)
+        if is_anchor and cur:
+            flush()
+        if is_anchor or cur:
+            cur.append(ln)
+            if len(cur) >= MAX_LINES_PER_BLOCK:
+                flush()
+
+    flush()
+    blocks = [b for b in blocks if len(b) >= 8]                 # 丢掉过短噪声
+
+    if not blocks:                                              # 兜底 2：按空行分块
+        blocks = [b.strip() for b in re.split(r"\n\s*\n", text) if len(b.strip()) >= 8]
+    if not blocks:                                              # 兜底 3：按句号切分
+        blocks = [s.strip() for s in re.split(r"[。；;]", text) if len(s.strip()) >= 8]
+
+    blocks.sort(key=len, reverse=True)
+    out, seen = [], set()
+    for b in blocks:
+        key = b[:40]
+        if key in seen:
+            continue
+        seen.add(key)
+        out.append(b[:_EXP_BLOCK_MAX_CHARS])
+        if len(out) >= max_n:
+            break
+    return out
+
+
+def build_interview_context(jd_parse: dict, match_result: dict, resume_text: str,
+                            max_exp: int = 3) -> str:
+    """把 jd_parse + match_result + 简历经历，压成一段紧凑的结构化上下文。
+
+    包含：必须技能 / 优先技能 / 缺失技能 / 已命中技能 / 匹配度与五维得分 / 最多 3 段核心经历。
+    """
+    jd_parse = jd_parse or {}
+    match_result = match_result or {}
+    skills = jd_parse.get("skills", {}) or {}
+    req = list(skills.get("required", []) or [])
+    pref = list(skills.get("preferred", []) or [])
+    matched = list(match_result.get("matched_skills", []) or [])
+    missing = list(match_result.get("missing_skills", []) or [])
+    dims = match_result.get("dimensions", {}) or {}
+    score = match_result.get("score", match_result.get("match_score", ""))
+
+    def _dim(*names):
+        """兼容两种维度命名：analyze 用 skills/experience/...，match_resume 用 skill_score/exp_score/..."""
+        for n in names:
+            if n in dims:
+                return dims[n]
+        return "-"
+
+    lines = [
+        f"【岗位必须技能】{'、'.join(req) if req else '未识别出明确技能'}",
+        f"【岗位优先技能】{'、'.join(pref) if pref else '未要求'}",
+        f"【缺失技能（必须但未命中）】{'、'.join(missing) if missing else '无'}",
+        f"【已命中技能】{'、'.join(matched) if matched else '无'}",
+        (f"【综合匹配度】{score}%（技能 {_dim('skills', 'skill_score')} / 经验 {_dim('experience', 'exp_score')}"
+         f" / 学历 {_dim('education', 'edu_score')} / 软技能 {_dim('soft_skills', 'soft_score')}"
+         f" / 加分 {_dim('bonus', 'bonus_score')}）"),
+        "【候选人核心经历】",
+    ]
+    exps = extract_experiences(resume_text, max_exp)
+    if exps:
+        for i, e in enumerate(exps, 1):
+            lines.append(f"{i}. {e}")
+    else:
+        lines.append("（未能抽取到结构化经历，请围绕岗位必须技能与缺失技能出题）")
+    return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
 # 工具 3：generate_interview_questions —— 面试题生成（调 LLM）
 # ---------------------------------------------------------------------------
-async def generate_interview_questions(jd_text: str, resume_text: str, stats: dict = None, structured: bool = False):
+async def generate_interview_questions(jd_text: str, resume_text: str, stats: dict = None,
+                                       structured: bool = False, context: str = None):
     """根据 JD + 简历生成 3-5 个针对性面试题。
 
     structured=False → 返回纯文本问题列表（SSE 用）
     structured=True  → 返回 [{"category","difficulty","question"}]（analyze 用）
+    context          → 第 6 步新增：结构化上下文（由 build_interview_context 生成）。
+                       传入时不再塞 JD/简历全文；为 None 时保持旧行为（向后兼容）。
     """
     from openai import AsyncOpenAI
 
     from .config import DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL
+    from . import trace as _trace
+
+    _t0 = time.perf_counter()
+    _trace_id = (stats or {}).get("trace_id", "")
+    _task_id = (stats or {}).get("task_id", "")
+
+    def _done(result, raw="", finish="", tokens=0, degraded=False, reason="", llm_called=False):
+        """写节点 Trace 后返回原结果（行为与埋点前一致）。
+
+        修复（llm_calls 计数 bug）：**由节点自己回报"是否真的调用了 LLM"**，
+        不再让编排层用"返回文本是否以某个前缀开头"去猜。
+        原实现判的是 "（未配置"（带全角括号），而实际占位文案没有括号 →
+        没调 LLM 却被记成 1 次（实测 164/200 条出现 llm_calls>0 但 tokens=0）。
+        """
+        if stats is not None:
+            stats["questions_llm_called"] = bool(llm_called)
+        _trace.record(
+            _trace_id, _task_id, "generate_interview_questions",
+            input_hash=_trace.hash_input(jd_text, resume_text),
+            output=result, tokens=tokens,
+            latency_ms=(time.perf_counter() - _t0) * 1000,
+            degraded=degraded, degrade_reason=reason,
+            raw_response=raw, finish_reason=finish,
+        )
+        return result
 
     if not DEEPSEEK_API_KEY:
         if structured:
-            return [{"category": "提示", "difficulty": "初级", "question": "未配置 DEEPSEEK_API_KEY，无法生成面试题", "answer_points": [], "scoring_criteria": ""}]
-        return ["（未配置 DEEPSEEK_API_KEY，无法生成面试题）"]
+            return _done([{"category": "提示", "difficulty": "初级", "question": "未配置 DEEPSEEK_API_KEY，无法生成面试题", "answer_points": [], "scoring_criteria": ""}],
+                         degraded=True, reason="未配置 DEEPSEEK_API_KEY")
+        return _done(["（未配置 DEEPSEEK_API_KEY，无法生成面试题）"],
+                     degraded=True, reason="未配置 DEEPSEEK_API_KEY")
 
     client = AsyncOpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL, timeout=30.0)
+
+    # ---- 输入块：有结构化上下文时不再塞 JD/简历全文；输出格式按 structured 决定 ----
+    if context:
+        source_desc = "以下结构性信息"
+        source_block = context
+        extra_req = ("要求：① 至少 2 题直接针对【缺失技能】考察；"
+                     "② 至少 2 题追问【候选人核心经历】中的具体细节（问做法、取舍、结果）；"
+                     "③ 覆盖【岗位必须技能】。\n")
+    else:
+        source_desc = "【岗位JD】和【候选人简历】"
+        source_block = f"【岗位JD】\n{jd_text}\n\n【候选人简历】\n{resume_text}"
+        extra_req = "要求：问题要结合候选人简历中的经历追问，并覆盖 JD 的核心技能要求。\n"
+
     if structured:
-        prompt = (
-            "你是资深技术面试官。请根据【岗位JD】和【候选人简历】生成 3-5 个有针对性、"
-            "能考察候选人是否胜任的面试问题。\n"
-            f"【岗位JD】\n{jd_text}\n\n【候选人简历】\n{resume_text}\n\n"
+        format_req = (
             "每道题必须包含：question（问题）、category（技术能力/项目经验/软技能）、"
             "difficulty（初级/中级/高级）、answer_points（3-5 个答题要点）、"
             "scoring_criteria（评分标准说明，如何算合格/优秀）。\n"
@@ -482,13 +836,16 @@ async def generate_interview_questions(jd_text: str, resume_text: str, stats: di
             '"scoring_criteria": "评分说明"}]'
         )
     else:
-        prompt = (
-            "你是资深技术面试官。请根据【岗位JD】和【候选人简历】生成 3-5 个有针对性、"
-            "能考察候选人是否胜任的面试问题。\n"
-            f"【岗位JD】\n{jd_text}\n\n【候选人简历】\n{resume_text}\n\n"
-            "要求：问题要结合候选人简历中的经历追问，并覆盖 JD 的核心技能要求。"
-            "只输出问题列表，每个问题一行，用 1. 2. 3. 编号，不要其它内容。"
-        )
+        format_req = "只输出问题列表，每个问题一行，用 1. 2. 3. 编号，不要其它内容。"
+
+    prompt = (
+        f"你是资深技术面试官。请根据{source_desc}生成 3-5 个有针对性、"
+        "能考察候选人是否胜任的面试问题。\n"
+        + extra_req
+        + source_block + "\n\n"
+        + format_req
+    )
+    resp = None                    # 用于判定"是否真的收到了模型响应"（= 计一次调用）
     try:
         resp = await client.chat.completions.create(
             model=DEEPSEEK_MODEL,
@@ -496,11 +853,13 @@ async def generate_interview_questions(jd_text: str, resume_text: str, stats: di
             temperature=0.5,
         )
         usage = getattr(resp, "usage", None)
+        _call_tokens = getattr(usage, "total_tokens", 0) or 0 if usage is not None else 0
         if stats is not None and usage is not None:
             stats["total_tokens"] += getattr(usage, "total_tokens", 0) or 0
             stats["prompt_tokens"] += getattr(usage, "prompt_tokens", 0) or 0
             stats["completion_tokens"] += getattr(usage, "completion_tokens", 0) or 0
         content = (resp.choices[0].message.content or "").strip()
+        _finish = getattr(resp.choices[0], "finish_reason", "") or ""
 
         if structured:
             # 提取 JSON 数组（模型可能带 ```json 围栏）
@@ -524,27 +883,77 @@ async def generate_interview_questions(jd_text: str, resume_text: str, stats: di
                                 "scoring_criteria": str(item.get("scoring_criteria", "")),
                             })
                     if out:
-                        return out
+                        return _done(out, raw=content, finish=_finish, tokens=_call_tokens,
+                                     llm_called=True)
                 except Exception:
                     pass
             # JSON 解析失败 → 降级为纯文本行
             lines = [re.sub(r"^\s*\d+[.、)]\s*", "", ln.strip()) for ln in content.splitlines() if ln.strip()]
-            return [{"category": "综合", "difficulty": "中级", "question": q,
-                     "answer_points": [], "scoring_criteria": ""} for q in lines[:5]]
+            return _done([{"category": "综合", "difficulty": "中级", "question": q,
+                           "answer_points": [], "scoring_criteria": ""} for q in lines[:5]],
+                         raw=content, finish=_finish, tokens=_call_tokens,
+                         degraded=True, reason="JSON 解析失败，降级为按行切分的纯文本",
+                         llm_called=True)          # 收到了模型响应 → 计一次调用
 
         questions = [ln.strip() for ln in content.splitlines() if ln.strip()]
         cleaned = [re.sub(r"^\s*\d+[.、)]\s*", "", q) for q in questions]
-        return [q for q in cleaned if q][:5] or ["（模型未返回有效问题）"]
+        _res = [q for q in cleaned if q][:5] or ["（模型未返回有效问题）"]
+        return _done(_res, raw=content, finish=_finish, tokens=_call_tokens,
+                     degraded=(_res == ["（模型未返回有效问题）"]),
+                     reason="模型未返回有效问题" if _res == ["（模型未返回有效问题）"] else "",
+                     llm_called=True)              # 收到了模型响应 → 计一次调用
     except Exception as e:
+        # 收到了响应但后续处理失败时，token 已经计过 → 仍应算一次调用，
+        # 保证「tokens>0 ⟺ 计一次调用」这个不变量（老数据里存在 tokens>0 却 llm_calls=0 的行）。
+        _called = resp is not None
         if structured:
-            return [{"category": "错误", "difficulty": "-", "question": f"（面试题生成失败：{e}）",
-                     "answer_points": [], "scoring_criteria": ""}]
-        return [f"（面试题生成失败：{e}）"]
+            return _done([{"category": "错误", "difficulty": "-", "question": f"（面试题生成失败：{e}）",
+                           "answer_points": [], "scoring_criteria": ""}],
+                         degraded=True, reason=f"{type(e).__name__}: {e}", llm_called=_called)
+        return _done([f"（面试题生成失败：{e}）"],
+                     degraded=True, reason=f"{type(e).__name__}: {e}", llm_called=_called)
 
 
 # ---------------------------------------------------------------------------
 # 工具 4：summarize_recommendation —— 推荐结论（规则优先，按需调 LLM）
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# 第 12 步：结论枚举解析（修 "不推荐" 被解析成 "推荐" 的反转 bug）
+# ---------------------------------------------------------------------------
+_CONCLUSION_ENUM = ("推荐", "待定", "不推荐")
+
+
+def parse_conclusion(content: str) -> str:
+    """把模型输出收敛到 推荐/待定/不推荐 三个枚举值。
+
+    原实现是 `for c in ("推荐","不推荐","待定"): if c in content[:60]`，
+    因为 **"推荐" 是 "不推荐" 的子串**，模型返回"不推荐"时会先命中"推荐" —— 结论直接反转，
+    这是最危险的方向（本该拒掉的候选人被推荐）。
+
+    现在的顺序：
+      1) 先在「结论：X」处做**精确匹配**（容忍前后 Markdown 符号与标点）
+      2) 再按**长度倒序**做子串匹配（"不推荐" 一定先于 "推荐" 判断）
+      3) 都匹配不到 → 兜底 "待定"
+    """
+    text = (content or "").strip()
+    head = text[:60]
+
+    # 1) 精确匹配「结论：X」
+    m = re.search(r"结论\s*[:：]\s*\**\s*([^\s，。,.；;、\n*]+)", head)
+    if m:
+        v = m.group(1).strip()
+        if v in _CONCLUSION_ENUM:
+            return v
+
+    # 2) 长度倒序子串匹配
+    for c in ("不推荐", "待定", "推荐"):
+        if c in head:
+            return c
+
+    # 3) 兜底
+    return "待定"
+
+
 async def summarize_recommendation(
     match_score: int,
     matched_skills: list,
@@ -561,20 +970,38 @@ async def summarize_recommendation(
     matched = matched_skills or []
     missing = missing_skills or []
 
-    if match_score >= 80 and len(missing) <= 1:
+    from . import trace as _trace
+
+    _t0 = time.perf_counter()
+    _trace_id = (stats or {}).get("trace_id", "")
+    _task_id = (stats or {}).get("task_id", "")
+
+    def _done(result, raw="", finish="", tokens=0, degraded=False, reason=""):
+        """写节点 Trace 后返回原结果（行为与埋点前完全一致）。"""
+        _trace.record(
+            _trace_id, _task_id, "summarize_recommendation",
+            input_hash=_trace.hash_input(match_score, matched, missing),
+            output=result, tokens=tokens,
+            latency_ms=(time.perf_counter() - _t0) * 1000,
+            degraded=degraded, degrade_reason=reason,
+            raw_response=raw, finish_reason=finish,
+        )
+        return result
+
+    if match_score >= 80 and len(missing) <= MAX_MISSING_REQUIRED_FOR_RECOMMEND:
         reason = (
             f"匹配度 {match_score}%，命中 {'、'.join(matched) or '无'}，"
             + (f"仅缺失 {'、'.join(missing)}。" if missing else "核心要求全覆盖。")
             + "符合岗位核心要求，建议推荐进入投递。"
         )
-        return {"conclusion": "推荐", "reason": reason, "llm_used": False}
+        return _done({"conclusion": "推荐", "reason": reason, "llm_used": False})
 
     if match_score < 50:
         reason = (
             f"匹配度仅 {match_score}%，核心技能 {'、'.join(missing) or '未命中'} 缺失，"
             "与岗位要求差距较大，不建议推进。"
         )
-        return {"conclusion": "不推荐", "reason": reason, "llm_used": False}
+        return _done({"conclusion": "不推荐", "reason": reason, "llm_used": False})
 
     # 中间地带：调 LLM 生成结论
     from openai import AsyncOpenAI
@@ -582,11 +1009,11 @@ async def summarize_recommendation(
     from .config import DEEPSEEK_API_KEY, DEEPSEEK_BASE_URL, DEEPSEEK_MODEL
 
     if not DEEPSEEK_API_KEY:
-        return {
+        return _done({
             "conclusion": "待定",
             "reason": f"匹配度 {match_score}%，介于可推荐区间，需结合面试进一步评估（未配置 API Key，规则兜底）。",
             "llm_used": False,
-        }
+        }, degraded=True, reason="未配置 DEEPSEEK_API_KEY，中间区间走规则兜底")
 
     client = AsyncOpenAI(api_key=DEEPSEEK_API_KEY, base_url=DEEPSEEK_BASE_URL, timeout=30.0)
     prompt = (
@@ -597,6 +1024,7 @@ async def summarize_recommendation(
         f"拟面试问题：{'；'.join(questions)}\n"
         "输出格式：\n结论：xxx\n理由：xxx"
     )
+    resp = None                    # 用于判定"是否真的收到了模型响应"（= 计一次调用）
     try:
         resp = await client.chat.completions.create(
             model=DEEPSEEK_MODEL,
@@ -604,16 +1032,15 @@ async def summarize_recommendation(
             temperature=0.3,
         )
         usage = getattr(resp, "usage", None)
+        _call_tokens = getattr(usage, "total_tokens", 0) or 0 if usage is not None else 0
         if stats is not None and usage is not None:
             stats["total_tokens"] += getattr(usage, "total_tokens", 0) or 0
             stats["prompt_tokens"] += getattr(usage, "prompt_tokens", 0) or 0
             stats["completion_tokens"] += getattr(usage, "completion_tokens", 0) or 0
         content = (resp.choices[0].message.content or "").strip()
-        conclusion = "待定"
-        for c in ("推荐", "不推荐", "待定"):
-            if c in content[:60]:
-                conclusion = c
-                break
+        _finish = getattr(resp.choices[0], "finish_reason", "") or ""
+        # 第 12 步：改用 parse_conclusion（原实现在此处把"不推荐"解析成"推荐"）
+        conclusion = parse_conclusion(content)
         reason = ""
         for ln in content.splitlines():
             if ln.strip().startswith("理由"):
@@ -621,9 +1048,14 @@ async def summarize_recommendation(
                 break
         if not reason:
             reason = content.replace("结论", "").replace(conclusion, "").strip("：: \n")[:150]
-        return {"conclusion": conclusion, "reason": reason or content[:150], "llm_used": True}
+        return _done({"conclusion": conclusion, "reason": reason or content[:150], "llm_used": True},
+                     raw=content, finish=_finish, tokens=_call_tokens)
     except Exception as e:
-        return {"conclusion": "待定", "reason": f"匹配度 {match_score}%，LLM 汇总失败（{e}），建议人工复核。", "llm_used": False}
+        # 同 generate_interview_questions：收到了响应（token 已计）就算一次调用
+        return _done({"conclusion": "待定",
+                      "reason": f"匹配度 {match_score}%，LLM 汇总失败（{e}），建议人工复核。",
+                      "llm_used": resp is not None},
+                     degraded=True, reason=f"{type(e).__name__}: {e}")
 
 
 # ---------------------------------------------------------------------------

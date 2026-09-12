@@ -14,7 +14,7 @@ import {
   Link2,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
-import { API_BASE } from "@/lib/api";
+import { API_BASE, getSessionId } from "@/lib/api";
 
 export const Route = createFileRoute("/match")({
   component: MatchPage,
@@ -78,6 +78,8 @@ function MatchPage() {
   const [jobUrl, setJobUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  // 第 10 步：查看身份。hr → 推荐/待定/不推荐；candidate → 高/中/低匹配 + 建议
+  const [role, setRole] = useState<"hr" | "candidate">("hr");
 
   // 填入示例数据
   const fillSampleData = () => {
@@ -131,6 +133,13 @@ function MatchPage() {
           jd: jdText,
           resume: resumeText,
           job_url: jobUrl.trim() || null,
+          // 第 9 步：缓存按租户/会话隔离。当前无登录体系，
+          // tenant_id 固定 default（等接入账号后替换为真实租户）；
+          // session_id 每个浏览器会话生成一次并复用。
+          tenant_id: "default",
+          session_id: getSessionId(),
+          // 第 10 步：角色（影响后端返回的结论文案，也参与缓存 key）
+          role,
         }),
       });
       const data = await res.json().catch(() => ({}));
@@ -229,7 +238,7 @@ function MatchPage() {
             <Textarea
               value={resumeText}
               onChange={(e) => setResumeText(e.target.value)}
-              placeholder="请粘贴候选人简历内容，或上传 PDF/Word 文件..."
+              placeholder="请粘贴候选人简历内容，或上传 PDF/DOCX 文件..."
               className="min-h-[180px] resize-none text-base"
               disabled={loading}
             />
@@ -250,6 +259,31 @@ function MatchPage() {
             </div>
           </div>
         )}
+
+        {/* 第 10 步：身份切换 —— 决定结论文案（HR：推荐/待定/不推荐；求职者：高/中/低匹配） */}
+        <div className="mb-4 flex flex-col items-center gap-2 reveal">
+          <span className="text-xs text-muted-foreground">以什么身份查看结论？</span>
+          <div className="inline-flex rounded-lg border border-border bg-card p-1">
+            {([
+              { key: "hr", text: "招聘方（HR）" },
+              { key: "candidate", text: "求职者" },
+            ] as const).map((r) => (
+              <button
+                key={r.key}
+                type="button"
+                onClick={() => setRole(r.key)}
+                className={
+                  "rounded-md px-4 py-1.5 text-sm transition-colors " +
+                  (role === r.key
+                    ? "bg-[var(--tech-blue)] text-white"
+                    : "text-muted-foreground hover:text-foreground")
+                }
+              >
+                {r.text}
+              </button>
+            ))}
+          </div>
+        </div>
 
         {/* 操作按钮 */}
         <div className="flex items-center justify-center reveal" data-reveal-delay="200">

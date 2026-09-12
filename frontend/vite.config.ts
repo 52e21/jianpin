@@ -18,7 +18,7 @@ const SOURCE_LOCATION_PLUGIN_PATH = SOURCE_LOCATION_PLUGIN_CANDIDATES.find((path
  * React + Vite 构建配置
  *
  * 硬约束：
- * - dev server 必须监听 3015 + strictPort（沙箱只开放一个代理端口）
+ * - dev server 监听 3016 + strictPort（简聘专用端口；3015 归晴天企服项目）
  * - outDir 'dist' / assetsDir 'assets' — 归一化产物目录
  */
 export default defineConfig({
@@ -36,7 +36,7 @@ export default defineConfig({
   ],
   server: {
     host: "0.0.0.0",
-    port: 3015,
+    port: 3016,
     strictPort: true,
     allowedHosts: true,
     // HMR 默认关闭：沙箱预览 iframe 下 HMR 的整页 reload 会放大任何 transform error

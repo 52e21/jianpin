@@ -7,6 +7,7 @@
 4. LLM 调用上限 2 次（面试题 1 次 + 待定结论 1 次）。
 """
 
+import copy
 import hashlib
 import json
 import logging
@@ -15,11 +16,13 @@ import time
 from typing import AsyncGenerator, Optional
 
 from .config import CACHE_TTL_SECONDS, LLM_TEMPERATURE, DEEPSEEK_MODEL
+from . import trace
 from .tools import (
     parse_jd,
     match_resume,
     generate_interview_questions,
     summarize_recommendation,
+    build_interview_context,
 )
 
 logger = logging.getLogger("agent")
@@ -33,13 +36,75 @@ if not logger.handlers:
 # 缓存：key = (jd, resume) 标准化哈希 → (过期时间戳, 输出片段列表)
 _result_cache: dict = {}
 
+# 第 6 步：输入短于这个字符数时，结构化上下文的固定开销大于原始文本，直接原样送
+CTX_MIN_CHARS = 200
+
+# ---------------------------------------------------------------------------
+# 第 10 步：角色化结论文案
+# ---------------------------------------------------------------------------
+# type 保持机器可读（推荐/待定/不推荐）——第 7 步反馈枚举、评测集 ground truth、
+# 前端三色卡片都依赖它；label 是给人看的、按角色变化的文案。
+ROLE_HR = "hr"
+ROLE_CANDIDATE = "candidate"
+ROLES = (ROLE_HR, ROLE_CANDIDATE)
+
+ROLE_LABELS = {
+    ROLE_HR: {
+        "推荐": "推荐",
+        "待定": "待定",
+        "不推荐": "不推荐",
+    },
+    ROLE_CANDIDATE: {
+        "推荐": "高匹配，建议投递",
+        "待定": "中匹配，可尝试，建议补强",
+        "不推荐": "低匹配，差距较大，建议先补技能或换岗位",
+    },
+}
+
+
+def _role_label(conclusion: str, role: str) -> str:
+    """把机器结论映射成该角色下的展示文案；未知角色按 HR 处理。"""
+    r = role if role in ROLES else ROLE_HR
+    return ROLE_LABELS[r].get(conclusion, conclusion)
+
+
+# ---------------------------------------------------------------------------
+# 第 5 步：节点埋点辅助
+# ---------------------------------------------------------------------------
+def _traced_node(trace_id: str, task_id: str, node_name: str, input_text: str, fn):
+    """执行一个同步节点并把过程写入 trace_events。
+
+    - 成功：记录 output_json + latency_ms
+    - 异常：记录 degraded=True + degrade_reason，并把异常继续抛出（不改变原有行为）
+    """
+    t0 = time.perf_counter()
+    ih = trace.hash_input(input_text)
+    try:
+        out = fn()
+    except Exception as e:
+        trace.record(trace_id, task_id, node_name, input_hash=ih,
+                     degraded=True, degrade_reason=f"{type(e).__name__}: {e}",
+                     latency_ms=(time.perf_counter() - t0) * 1000)
+        raise
+    trace.record(trace_id, task_id, node_name, input_hash=ih, output=out,
+                 latency_ms=(time.perf_counter() - t0) * 1000)
+    return out
+
 
 def _norm(text: str) -> str:
     return re.sub(r"\s+", "", text or "").strip()
 
 
-def _cache_key(jd: str, resume: str) -> str:
-    raw = _norm(jd) + "||" + _norm(resume)
+def _cache_key(jd: str, resume: str, tenant_id: str = "default", session_id: str = "default",
+               role: str = ROLE_HR) -> str:
+    """第 9/10 步：缓存 key 加入租户/会话/角色前缀。
+
+    - 原 key = md5(JD + 简历)，全局共享 —— A 公司命中后 B 公司会读到同一结果。
+    - 第 10 步 role 会改变返回文案，因此必须计入 key，否则 hr 缓存会被 candidate 复用。
+    """
+    raw = ((tenant_id or "default") + "|" + (session_id or "default") + "|"
+           + (role if role in ROLES else ROLE_HR) + "|"
+           + _norm(jd) + "||" + _norm(resume))
     return hashlib.md5(raw.encode("utf-8")).hexdigest()
 
 
@@ -52,7 +117,9 @@ def _jd_summary(jd: str) -> str:
 # ---------------------------------------------------------------------------
 # 主执行入口
 # ---------------------------------------------------------------------------
-async def run_agent(jd: str, resume: str, stats: Optional[dict] = None) -> AsyncGenerator[str, None]:
+async def run_agent(jd: str, resume: str, stats: Optional[dict] = None,
+                    tenant_id: str = "default", session_id: str = "default",
+                    role: str = ROLE_HR) -> AsyncGenerator[str, None]:
     """
     AI 招聘助理执行入口（async 生成器，兼容 SSE 流式输出）。
 
@@ -64,7 +131,10 @@ async def run_agent(jd: str, resume: str, stats: Optional[dict] = None) -> Async
     """
     jd = (jd or "").strip()
     resume = (resume or "").strip()
-    key = _cache_key(jd, resume)
+    tenant_id = (tenant_id or "default").strip() or "default"
+    session_id = (session_id or "default").strip() or "default"
+    role = role if role in ROLES else ROLE_HR
+    key = _cache_key(jd, resume, tenant_id, session_id, role)
 
     if stats is None:
         stats = {}
@@ -165,32 +235,48 @@ async def run_agent(jd: str, resume: str, stats: Optional[dict] = None) -> Async
 
     # ========== 步骤 3：面试题生成（仅中等以上匹配才调 LLM） ==========
     score = match_result["match_score"]
+    no_scorable = bool(match_result.get("no_scorable_dimension"))
     questions: list = []
-    if score < 50:
+    if no_scorable:
+        # 事项 1：JD 无可评分维度 → 不生成面试题、不调 LLM
+        yield emit("【面试题生成】JD 未识别出可评分维度，跳过面试题生成（LLM 调用 0 次）。\n\n")
+    elif score < 50:
         # 低匹配：成本控制短路 —— 不生成面试题、不调 LLM
         yield emit("【面试题生成】匹配度过低，跳过面试题生成以节省成本（LLM 调用 0 次）。\n\n")
     else:
         yield emit("【面试题生成】正在生成个性化面试题...\n")
-        questions = await generate_interview_questions(jd, resume, stats)
-        if questions and not questions[0].startswith("（未配置"):
+        # 第 6 步：SSE 旧链路同样改为结构化上下文注入（输出仍为纯文本列表）
+        questions = await generate_interview_questions(
+            jd, resume, stats,
+            context=build_interview_context(jd_result, match_result, resume))
+        # 修复（llm_calls 计数 bug）：与 analyze 链路一致，以节点回报的标志为准
+        if stats.pop("questions_llm_called", False):
             stats["llm_call_count"] += 1
             stats["llm_used"] = True
         questions_text = "\n".join(f"Q{i + 1}. {q}" for i, q in enumerate(questions))
         yield emit(questions_text + "\n\n")
 
     # ========== 步骤 4：推荐结论（规则优先，按需 LLM） ==========
-    yield emit("【推荐结论】正在汇总评估...\n")
-    rec = await summarize_recommendation(
-        match_result["match_score"],
-        match_result["matched_skills"],
-        match_result["missing_skills"],
-        questions,
-        stats,
-    )
-    if rec.get("llm_used"):
-        stats["llm_call_count"] += 1
-        stats["llm_used"] = True
-    yield emit(f"结论：{rec['conclusion']}\n")
+    if no_scorable:
+        # 事项 1：不进入阈值判定，直接待定 + 人工复核（原实现会因 100 分给出"推荐"）
+        yield emit("【推荐结论】\n")
+        rec = {"conclusion": "待定",
+               "reason": match_result.get("reason") or match_result["summary"],
+               "llm_used": False}
+    else:
+        yield emit("【推荐结论】正在汇总评估...\n")
+        rec = await summarize_recommendation(
+            match_result["match_score"],
+            match_result["matched_skills"],
+            match_result["missing_skills"],
+            questions,
+            stats,
+        )
+        if rec.get("llm_used"):
+            stats["llm_call_count"] += 1
+            stats["llm_used"] = True
+    # 第 10 步：SSE 链路的结论文案同样按角色输出
+    yield emit(f"结论：{_role_label(rec['conclusion'], role)}\n")
     yield emit(f"理由：{rec['reason']}\n")
 
     # ---- 缓存 ----
@@ -202,13 +288,16 @@ async def run_agent(jd: str, resume: str, stats: Optional[dict] = None) -> Async
 # ---------------------------------------------------------------------------
 # 带历史落库的外层入口
 # ---------------------------------------------------------------------------
-async def run_agent_with_history(jd: str, resume: str) -> AsyncGenerator[str, None]:
+async def run_agent_with_history(jd: str, resume: str,
+                                 tenant_id: str = "default", session_id: str = "default",
+                                 role: str = ROLE_HR) -> AsyncGenerator[str, None]:
     """外层：执行 Agent 并把统计信息写入 SQLite 历史。"""
     start = time.time()
     result_parts: list = []
     stats: dict = {}
+    task_id = trace.new_task_id()          # 第 7 步：SSE 链路同样落 task_id
     try:
-        async for chunk in run_agent(jd, resume, stats):
+        async for chunk in run_agent(jd, resume, stats, tenant_id, session_id, role):
             result_parts.append(chunk)
             yield chunk
     finally:
@@ -224,6 +313,7 @@ async def run_agent_with_history(jd: str, resume: str) -> AsyncGenerator[str, No
                 total_tokens=stats.get("total_tokens", 0),
                 cache_hit=bool(stats.get("cache_hit", False)),
                 duration_ms=duration_ms,
+                task_id=task_id,
             )
         except Exception as e:
             logger.warning("SAVE-HISTORY-ERROR task=%r error=%r", stats.get("task"), e)
@@ -235,7 +325,42 @@ async def run_agent_with_history(jd: str, resume: str) -> AsyncGenerator[str, No
 _analyze_cache: dict = {}
 
 
-async def analyze_agent(jd: str, resume: str, job_url: str = "") -> dict:
+def _save_analyze_history(payload: dict, jd: str, resume: str, job_url,
+                          duration_ms: int, llm_calls: int = 0, total_tokens: int = 0,
+                          cache_hit: bool = False):
+    """把一次分析落进执行历史。
+
+    缓存命中路径**同样要落**（修复：否则返回的是最初那次任务的 task_id，
+    那条历史一旦被删除，用户点「采纳/改判」就会 404）。
+    """
+    try:
+        from .database import save_history
+
+        mr = payload.get("match_result", {}) or {}
+        rec = payload.get("recommendation", {}) or {}
+        result = (
+            f"【结构化分析】匹配度 {mr.get('score')}% | 结论：{rec.get('type')}\n"
+            f"理由：{rec.get('reason')}\n面试题 {len(payload.get('interview_questions') or [])} 个"
+        )
+        if cache_hit:
+            result += "\n（命中缓存，未重新调用 LLM）"
+        save_history(
+            task=f"JD: {_jd_summary(jd)} | 简历: {_norm(resume)[:30]}",
+            result=result,
+            llm_calls=llm_calls,
+            total_tokens=total_tokens,
+            cache_hit=cache_hit,
+            duration_ms=duration_ms,
+            job_url=job_url or "",
+            task_id=payload.get("task_id", ""),
+        )
+    except Exception as e:
+        logger.warning("ANALYZE-SAVE-HISTORY-ERROR %r", e)
+
+
+async def analyze_agent(jd: str, resume: str, job_url: str = "", ctx_mode: str = "structured",
+                        tenant_id: str = "default", session_id: str = "default",
+                        role: str = ROLE_HR) -> dict:
     """执行完整分析并返回结构化结果（执行书字段为准）。
 
     与 run_agent 共用同一套规则解析/匹配/面试题/推荐逻辑与缓存键。
@@ -251,15 +376,31 @@ async def analyze_agent(jd: str, resume: str, job_url: str = "") -> dict:
     jd = (jd or "").strip()
     resume = (resume or "").strip()
     job_url = (job_url or "").strip() or None
-    key = _cache_key(jd, resume)
+    tenant_id = (tenant_id or "default").strip() or "default"
+    session_id = (session_id or "default").strip() or "default"
+    role = role if role in ROLES else ROLE_HR
+    key = _cache_key(jd, resume, tenant_id, session_id, role)
 
+    started = time.time()          # 缓存命中路径也要算耗时（并写历史行）
     now = time.time()
     hit = _analyze_cache.get(key)
     if hit:
-        expiry, payload = hit
+        expiry, cached = hit
         if now < expiry:
+            # 第 14 步：缓存里存的是对象引用。原实现直接改 payload["cache_hit"]/["job_url"]，
+            # 改的是**缓存本体**，也改到了之前已经返回给调用方的同一个对象上 ——
+            # 后果：不同岗位链接会互相覆盖；调用方读到的 cache_hit 会被后续请求篡改。
+            payload = copy.deepcopy(cached)
             payload["cache_hit"] = True
             payload["job_url"] = job_url  # 缓存不区分链接，命中时附加本次链接
+            # 修复（事项 5 验证时发现）：缓存命中也要有自己的 task_id 与历史行。
+            # 否则返回的是**最初那次任务**的 task_id，一旦那条历史记录被删除
+            # （前端有单条删除/清空功能），用户点「采纳/改判」就会收到 404。
+            source_task_id = payload.get("task_id", "")
+            payload["task_id"] = trace.new_task_id()
+            payload["cache_source_task_id"] = source_task_id  # 保留回溯到最初那次运行
+            _save_analyze_history(payload, jd, resume, job_url,
+                                  duration_ms=int((time.time() - started) * 1000), cache_hit=True)
             return payload
         _analyze_cache.pop(key, None)
 
@@ -270,13 +411,19 @@ async def analyze_agent(jd: str, resume: str, job_url: str = "") -> dict:
         "prompt_tokens": 0,
         "completion_tokens": 0,
     }
-    started = time.time()
+
+    # 第 5 步：为本次分析生成 trace_id / task_id，并通过 stats 透传给 LLM 节点
+    trace_id = trace.new_trace_id()
+    task_id = trace.new_task_id()
+    stats["trace_id"] = trace_id
+    stats["task_id"] = task_id
 
     # 1. JD 解析（纯规则）
-    jd_parse = parse_jd(jd)
+    jd_parse = _traced_node(trace_id, task_id, "parse_jd", jd, lambda: parse_jd(jd))
 
     # 2. 简历匹配（纯规则加权）
-    mr = match_resume(jd_parse, resume)
+    mr = _traced_node(trace_id, task_id, "match_resume", jd + "\u0001" + resume,
+                      lambda: match_resume(jd_parse, resume))
     dims_raw = mr.get("dimensions", {})
     match_result = {
         "score": mr["match_score"],
@@ -295,15 +442,65 @@ async def analyze_agent(jd: str, resume: str, job_url: str = "") -> dict:
 
     # 3. 面试题（低匹配 <50 短路，零 LLM；否则调 LLM）
     interview_questions = []
-    if mr["match_score"] < 50:
+    no_scorable = bool(mr.get("no_scorable_dimension"))
+
+    def _trace_skipped(skip_reason: str, conclusion: str):
+        """短路/跳过时也留痕，保证每个 task 稳定产出 4 条节点 Trace。"""
+        trace.record(trace_id, task_id, "generate_interview_questions",
+                     input_hash=trace.hash_input(jd, resume),
+                     output={"skipped": True, "reason": skip_reason},
+                     latency_ms=0, degraded=False, degrade_reason=skip_reason)
+        trace.record(trace_id, task_id, "summarize_recommendation",
+                     input_hash=trace.hash_input(mr["match_score"]),
+                     output={"skipped": True, "reason": skip_reason, "conclusion": conclusion},
+                     latency_ms=0, degraded=False, degrade_reason=skip_reason)
+
+    if no_scorable:
+        # 事项 1：JD 未识别出可评分维度 → 待定 + 人工复核，不调 LLM、不生成面试题。
+        recommendation = {
+            "type": "待定",
+            "reason": mr.get("reason") or mr["summary"],
+            "label": _role_label("待定", role),
+            "role": role,
+        }
+        llm_used = False
+        _trace_skipped("JD 未识别出可评分维度（total_w=0），跳过 LLM，建议人工复核", "待定")
+    elif mr["match_score"] < 50:
         recommendation = {
             "type": "不推荐",
             "reason": mr["summary"] + "；匹配度过低，跳过面试题生成（零 LLM）。",
+            "label": _role_label("不推荐", role),
+            "role": role,
         }
         llm_used = False
+        _trace_skipped("低分短路：match_score<50，成本控制目的主动跳过", "不推荐")
     else:
-        questions = await generate_interview_questions(jd, resume, stats, structured=True)
-        if not questions[0].get("question", "").startswith(("（未配置", "（面试题生成失败", "（错误")):
+        # 第 6 步：注入结构化上下文，不再直塞 JD 全文 + 简历全文。
+        # - ctx_mode="raw"：强制走旧行为，用于 A/B 对比实验（评测脚本用）
+        # - 输入本身很短时（<200 字）结构化包装是净开销，直接原样送
+        raw_len = len(jd) + len(resume)
+        if ctx_mode != "raw" and raw_len >= CTX_MIN_CHARS:
+            iv_context = build_interview_context(jd_parse, match_result, resume)
+        else:
+            iv_context = None
+        questions = await generate_interview_questions(jd, resume, stats, structured=True,
+                                                       context=iv_context)
+        # 第 13 步：防空列表越界。
+        # structured=True 时，若模型返回空内容，函数会返回 [] ——
+        # 原实现紧接着访问 questions[0]，直接 IndexError，整个请求 500。
+        if not questions:
+            questions = [{
+                "category": "提示", "difficulty": "-",
+                "question": "（面试题生成失败：模型返回空内容）",
+                "answer_points": [], "scoring_criteria": "",
+            }]
+        elif not isinstance(questions[0], dict):
+            # 防御性兜底：非预期形态（例如误传纯文本列表）也要收敛成结构化对象
+            questions = [{"category": "综合", "difficulty": "中级", "question": str(q),
+                          "answer_points": [], "scoring_criteria": ""} for q in questions]
+        # 修复（llm_calls 计数 bug）：以节点回报的机器可读标志为准，
+        # 不再用"返回文本是否以某前缀开头"来猜（原实现因括号不一致误计 164/200 条）。
+        if stats.pop("questions_llm_called", False):
             stats["llm_call_count"] += 1
             stats["llm_used"] = True
         interview_questions = questions
@@ -316,7 +513,8 @@ async def analyze_agent(jd: str, resume: str, job_url: str = "") -> dict:
         if rec.get("llm_used"):
             stats["llm_call_count"] += 1
             stats["llm_used"] = True
-        recommendation = {"type": rec["conclusion"], "reason": rec["reason"]}
+        recommendation = {"type": rec["conclusion"], "reason": rec["reason"],
+                          "label": _role_label(rec["conclusion"], role), "role": role}
         llm_used = stats["llm_used"]
 
     payload = {
@@ -328,28 +526,25 @@ async def analyze_agent(jd: str, resume: str, job_url: str = "") -> dict:
         "llm_calls": stats["llm_call_count"],
         "total_tokens": stats.get("total_tokens", 0),
         "cache_hit": False,
+        # 第 5 步新增：可观测与反馈所需的关联标识（第 7 步反馈接口用它定位任务）
+        "task_id": task_id,
+        "trace_id": trace_id,
+        # 第 9 步新增：缓存隔离维度（命中缓存时这两个值与请求者必然一致）
+        "tenant_id": tenant_id,
+        "session_id": session_id,
+        # 第 10 步新增：本次请求的角色（label 已按角色生成）
+        "role": role,
     }
-    _analyze_cache[key] = (time.time() + CACHE_TTL_SECONDS, payload)
-    payload["cache_hit"] = False
+    # 第 14 步：入缓存的是**副本**，保证返回给调用方的对象与缓存对象不共享引用
+    # （否则调用方一旦修改返回值，缓存就被污染）
+    _analyze_cache[key] = (time.time() + CACHE_TTL_SECONDS, copy.deepcopy(payload))
 
     # 落历史（复用执行历史表，job_url 单独列）
-    try:
-        from .database import save_history
-
-        save_history(
-            task=f"JD: {_jd_summary(jd)} | 简历: {_norm(resume)[:30]}",
-            result=(
-                f"【结构化分析】匹配度 {match_result['score']}% | 结论：{recommendation['type']}\n"
-                f"理由：{recommendation['reason']}\n面试题 {len(interview_questions)} 个"
-            ),
-            llm_calls=stats["llm_call_count"],
-            total_tokens=stats.get("total_tokens", 0),
-            cache_hit=False,
-            duration_ms=int((time.time() - started) * 1000),
-            job_url=job_url or "",
-        )
-    except Exception as e:
-        logger.warning("ANALYZE-SAVE-HISTORY-ERROR %r", e)
+    _save_analyze_history(payload, jd, resume, job_url,
+                          duration_ms=int((time.time() - started) * 1000),
+                          llm_calls=stats["llm_call_count"],
+                          total_tokens=stats.get("total_tokens", 0),
+                          cache_hit=False)
 
     logger.info(
         "ANALYZE-EXEC task=JD:%s | score=%s | llm_calls=%d | tokens=%d",

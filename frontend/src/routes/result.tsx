@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { CircularProgress } from "@/components/circular-progress";
 import { ResultCard, StatusCard } from "@/components/result-card";
 import { SkillTagGroup } from "@/components/skill-tag";
+import { FeedbackBar } from "@/components/feedback-bar";
 import {
   Briefcase,
   Target,
@@ -64,11 +65,14 @@ export interface AnalyzeResult {
     answer_points?: string[];
     scoring_criteria?: string;
   }>;
-  recommendation: { type: string; reason: string };
+  recommendation: { type: string; reason: string; label?: string; role?: string };
   llm_calls: number;
   total_tokens: number;
   cache_hit: boolean;
   job_url?: string | null;
+  /** 第 5/7 步新增：反馈接口按 task_id 定位本次分析 */
+  task_id?: string;
+  trace_id?: string;
 }
 
 // 结果持久化（跳详情页返回不丢失）
@@ -138,6 +142,9 @@ function ResultPage() {
   };
   const recStatus = recMap[data.recommendation.type] || "pending";
   const recTitleMap = { recommended: "推荐", pending: "待定", rejected: "不推荐" };
+  // 第 10 步：后端按 role 给出的展示文案（求职者版为"高匹配，建议投递"等）；
+  // 缺省回退到 HR 文案，保证旧结果也能正常显示。
+  const recTitle = data.recommendation.label || recTitleMap[recStatus];
 
   // 点击面试题 → 跳详情页（路由 state 携带问题）
   const handleQuestionClick = (index: number) => {
@@ -385,7 +392,7 @@ function ResultPage() {
         <div className="reveal">
           <StatusCard
             status={recStatus}
-            title={recTitleMap[recStatus]}
+            title={recTitle}
             description={data.recommendation.reason || "暂无理由"}
             reasons={[
               `综合匹配度 ${score}%，命中 ${mr.matched_skills.length} 项技能`,
@@ -393,6 +400,8 @@ function ResultPage() {
               score < 50 ? "匹配度过低，本次未调用 LLM 生成面试题（成本控制）" : `面试题 ${data.interview_questions.length} 题`,
             ]}
           />
+          {/* 第 8 步：采纳 / 改判 / 反馈（回流评测集） */}
+          <FeedbackBar taskId={data.task_id} originalConclusion={data.recommendation.type} />
         </div>
 
         {/* 投递简历通道 - 仅匹配度 ≥50 显示 */}

@@ -12,7 +12,9 @@ interface FileUploadProps {
 }
 
 export function FileUpload({
-  accept = ".pdf,.doc,.docx",
+  // 第 15 步：与后端契约对齐 —— 后端只实现了 .pdf / .docx（python-docx 不支持老的 .doc 二进制格式），
+  // 这里不再放行 .doc，避免"前端能选、后端 400"的错配。
+  accept = ".pdf,.docx",
   maxSize = 5,
   onFileSelect,
   onFileRemove,
@@ -32,14 +34,19 @@ export function FileUpload({
       return false;
     }
 
-    // Check file type
+    // Check file type（与后端 upload.py 支持的后缀保持一致）
     const validTypes = [
       "application/pdf",
-      "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
     ];
     if (!validTypes.includes(file.type)) {
-      setError("仅支持 PDF 或 Word 文件");
+      const isLegacyDoc =
+        file.type === "application/msword" || file.name.toLowerCase().endsWith(".doc");
+      setError(
+        isLegacyDoc
+          ? "不支持旧版 .doc 格式，请用 Word「另存为 .docx」后重新上传"
+          : "仅支持 PDF 或 DOCX 文件",
+      );
       return false;
     }
 
@@ -155,7 +162,7 @@ export function FileUpload({
             点击或拖拽上传文件
           </p>
           <p className="text-xs text-muted-foreground mt-1">
-            支持 PDF、Word 格式，最大 {maxSize}MB
+            支持 PDF、DOCX 格式，最大 {maxSize}MB
           </p>
         </div>
       </div>

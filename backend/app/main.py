@@ -1,3 +1,4 @@
+import json
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
@@ -5,8 +6,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from sse_starlette.sse import EventSourceResponse
 
 from .agent import run_agent_with_history, analyze_agent
-from .database import init_db, fetch_history, delete_history, clear_history
+from .database import (init_db, fetch_history, delete_history, clear_history,
+                       set_feedback, fetch_history_by_task)
 from .upload import MAX_FILE_SIZE, extract_resume
+
+# 第 7 步：反馈接口的受控词表（避免脏数据进库）
+FEEDBACK_ACTIONS = ("采纳", "改判", "反馈")
+CONCLUSIONS = ("推荐", "待定", "不推荐")
+# 第 10 步：角色视角（HR / 候选人）
+ROLES = ("hr", "candidate")
 
 
 @asynccontextmanager
@@ -23,8 +31,10 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3015",
         "http://127.0.0.1:3015",
-        "http://6f2abf86.r35.cpolar.top",
-        "https://6f2abf86.r35.cpolar.top",
+        "http://localhost:3016",
+        "http://127.0.0.1:3016",
+        "http://4b24096f.r35.cpolar.top",
+        "https://4b24096f.r35.cpolar.top",
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -82,7 +92,71 @@ async def agent_analyze(payload: dict):
     job_url = (payload.get("job_url") or "").strip()
     if not jd or not resume:
         raise HTTPException(status_code=400, detail="JD 与候选人简历都不能为空")
-    return await analyze_agent(jd, resume, job_url)
+    # 第 9 步：缓存按租户/会话隔离（缺省 default；等接入登录体系后换成真实租户）
+    tenant_id = (payload.get("tenant_id") or "default").strip() or "default"
+    session_id = (payload.get("session_id") or "default").strip() or "default"
+    # 第 10 步：角色（hr / candidate）；非法值直接 400，避免脏值进缓存 key
+    role = (payload.get("role") or "hr").strip() or "hr"
+    if role not in ROLES:
+        raise HTTPException(status_code=400, detail="role 必须是 " + " / ".join(ROLES) + " 之一")
+    return await analyze_agent(jd, resume, job_url,
+                               tenant_id=tenant_id, session_id=session_id, role=role)
+
+
+@app.post("/api/agent/feedback")
+def agent_feedback(payload: dict):
+    """第 7 步：记录用户对分析结论的反馈。
+
+    入参：
+        { "task_id": "tk_xxx", "action": "采纳|改判|反馈",
+          "new_conclusion": "推荐|待定|不推荐"（仅 action=改判 时必填）,
+          "comment": "可选" }
+    落库：execution_history.feedback（JSON 字符串） + feedback_at（时间戳）
+    """
+    task_id = (payload.get("task_id") or "").strip()
+    action = (payload.get("action") or "").strip()
+    new_conclusion = (payload.get("new_conclusion") or "").strip()
+    comment = (payload.get("comment") or "").strip()
+
+    if not task_id:
+        raise HTTPException(status_code=400, detail="task_id 不能为空")
+    if action not in FEEDBACK_ACTIONS:
+        raise HTTPException(status_code=400, detail="action 必须是 " + " / ".join(FEEDBACK_ACTIONS) + " 之一")
+    if action == "改判":
+        if new_conclusion not in CONCLUSIONS:
+            raise HTTPException(status_code=400, detail="改判时必须提供合法的 new_conclusion（推荐/待定/不推荐）")
+    else:
+        new_conclusion = ""
+
+    record = fetch_history_by_task(task_id)
+    if record is None:
+        raise HTTPException(status_code=404, detail="未找到该 task_id 对应的分析记录")
+
+    feedback = json.dumps(
+        {"action": action, "new_conclusion": new_conclusion, "comment": comment,
+         "original_conclusion": _extract_conclusion(record.get("result", ""))},
+        ensure_ascii=False,
+    )
+    res = set_feedback(task_id, feedback)
+    if not res.get("updated"):
+        raise HTTPException(status_code=404, detail="未找到该 task_id 对应的分析记录")
+
+    return {
+        "message": "已记录",
+        "task_id": task_id,
+        "action": action,
+        "new_conclusion": new_conclusion,
+        "original_conclusion": _extract_conclusion(record.get("result", "")),
+        "feedback_at": res["feedback_at"],
+    }
+
+
+def _extract_conclusion(result_text: str) -> str:
+    """从历史 result 文本里取出原结论（用于计算改判方向）。"""
+    for c in CONCLUSIONS:
+        if f"结论：{c}" in (result_text or ""):
+            return c
+    return ""
 
 
 @app.post("/api/agent/run")
@@ -91,9 +165,16 @@ async def agent_run(payload: dict):
     resume = (payload.get("resume") or "").strip()
     if not jd or not resume:
         return {"error": "JD 与候选人简历都不能为空"}
+    # 第 9 步：缓存按租户/会话隔离
+    tenant_id = (payload.get("tenant_id") or "default").strip() or "default"
+    session_id = (payload.get("session_id") or "default").strip() or "default"
+    # 第 10 步：角色
+    role = (payload.get("role") or "hr").strip() or "hr"
+    if role not in ROLES:
+        raise HTTPException(status_code=400, detail="role 必须是 " + " / ".join(ROLES) + " 之一")
 
     async def event_generator():
-        async for chunk in run_agent_with_history(jd, resume):
+        async for chunk in run_agent_with_history(jd, resume, tenant_id, session_id, role):
             yield {"data": chunk}
 
     return EventSourceResponse(event_generator())
