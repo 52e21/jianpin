@@ -30,6 +30,26 @@ ROUND_LIMIT = 2          # A5：最多追问 2 轮，超出走"待定"
 SKILL_PHRASE_RE = re.compile(r"(要求|熟悉|精通|掌握|了解|会用|具备|至少|擅长)[^。；;，,]{1,24}")
 
 
+def _looks_like_skill(phrase: str) -> bool:
+    """"技能性表述"里是否**真的提到了技能**。
+
+    只用"要求/熟悉…"这种触发词判断不够：A6 构造用例时连撞两次误判 ——
+    `要求有良好的沟通能力`（只有软技能）、`要求面议`（谈薪，不是技能）都被当成技能信号，
+    漏判为"信息充足"而不去追问。因此收紧为：
+      - 表述里含 ASCII 技术词（Java / SQL / Selenium…），或
+      - 含主链路技能词表里的中文技能（机器学习 / 数据仓库 / 大模型…）
+    """
+    m = SKILL_PHRASE_RE.search(phrase or "")
+    seg = m.group(0) if m else (phrase or "")
+    if re.search(r"[A-Za-z0-9+#.]", seg):
+        return True
+    try:
+        from .tools import SKILL_KEYWORDS
+    except Exception:
+        SKILL_KEYWORDS = ()
+    return any(k in seg for k in (SKILL_KEYWORDS or ()))
+
+
 def _present(value) -> bool:
     """字段是否"给到了"（None / 空串 / 空列表都算缺失）。"""
     if value is None:
@@ -78,7 +98,7 @@ def sufficiency(jd_parse: dict, jd_text: str = "") -> dict:
         if not _present(sig[f]):
             missing.append(f)
 
-    has_skill_signal = _present(sig[REQUIRED_SKILLS_FIELD]) or _present(sig["skill_phrase"])
+    has_skill_signal = _present(sig[REQUIRED_SKILLS_FIELD]) or _looks_like_skill(sig["skill_phrase"])
     other_missing = [f for f in missing if f != REQUIRED_SKILLS_FIELD]
     if not has_skill_signal and len(other_missing) >= 1:
         status = "insufficient"

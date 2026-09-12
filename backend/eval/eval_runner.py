@@ -141,6 +141,10 @@ async def run_one(case, with_llm: bool):
         "cache_hit": bool(payload.get("cache_hit", False)),
         "pred_conclusion": pred_concl,
         "gt_conclusion": case["gt"]["conclusion"],
+        # A6：追问分支的期望值（新用例才有 gt.expected_status）
+        "pred_status": payload.get("status") or "",
+        "gt_status": (case.get("gt") or {}).get("expected_status") or "",
+        "ask_questions": len((payload.get("ask") or {}).get("questions") or []),
         "pred_required": pred_req,
         "pred_preferred": pred_pref,
         "pred_all": pred_all,
@@ -236,6 +240,23 @@ def summarize(results, set_path: Path, with_llm: bool, elapsed_s: float):
         "error_count": len(errors),
         "errors": [{"id": r["id"], "error": r["error"]} for r in errors][:20],
     }
+    # ---- A6/A7：追问分支指标（仅当评测集里带 gt.expected_status 时输出）----
+    ask_cases = [r for r in oks if r.get("gt_status")]
+    if ask_cases:
+        hit = sum(1 for r in ask_cases if r["pred_status"] == r["gt_status"])
+        asked = [r for r in ask_cases if r["pred_status"] == "need_more_info"]
+        report["ask_branch"] = {
+            "n": len(ask_cases),
+            "hit": hit,
+            "accuracy": round(hit / len(ask_cases), 4),
+            "asked": len(asked),
+            "questions_total": sum(r["ask_questions"] for r in ask_cases),
+            "questions_min": min([r["ask_questions"] for r in ask_cases] or [0]),
+            "questions_max": max([r["ask_questions"] for r in ask_cases] or [0]),
+            "llm_calls": sum(r["llm_calls"] for r in ask_cases),
+            "conclusion_agreement_n": "%d/%d" % (
+                sum(1 for r in ask_cases if r["pred_conclusion"] == r["gt_conclusion"]), len(ask_cases)),
+        }
     return report, results
 
 
