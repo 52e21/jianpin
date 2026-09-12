@@ -1,0 +1,20 @@
+{"id": "cap_001", "role": "Java 后端", "skill": "Java", "capability": "熟悉 JVM 内存结构与 GC、并发包（JUC）；能写出线程安全且无内存泄漏的服务端代码，能解释 synchronized 与 volatile 的语义差异及各自适用场景。", "source": "manual"}
+{"id": "cap_002", "role": "Java 后端", "skill": "Spring Boot", "capability": "能独立搭建 REST 服务；理解 IoC/AOP、自动配置与 Starter 机制，能定位循环依赖、事务失效与配置优先级等常见问题。", "source": "manual"}
+{"id": "cap_003", "role": "Java 后端", "skill": "Spring", "capability": "理解 Bean 生命周期、作用域与依赖注入；掌握声明式事务与传播行为，能解释 @Transactional 在同类方法调用、非 public 方法上失效的原因。", "source": "manual"}
+{"id": "cap_004", "role": "Java 后端", "skill": "MySQL", "capability": "能设计规范化表结构与索引（B+ 树、最左前缀、覆盖索引）；会读执行计划优化慢查询，理解隔离级别与 MVCC 对并发行为的影响。", "source": "manual"}
+{"id": "cap_005", "role": "后端", "skill": "Redis", "capability": "熟悉常用数据结构与适用场景；能设计缓存穿透/击穿/雪崩的防护方案，理解 RDB/AOF 持久化、过期淘汰策略与集群分片。", "source": "manual"}
+{"id": "cap_006", "role": "后端", "skill": "消息队列", "capability": "理解 Kafka 分区、副本、消费组与位点管理；能处理消息重复、积压与顺序性问题，清楚「至少一次/恰好一次」的代价与幂等设计。", "source": "manual"}
+{"id": "cap_007", "role": "后端", "skill": "Go", "capability": "熟悉 goroutine 与 channel 的并发模型；能用 context 做超时与取消传播，能分析 goroutine 泄漏与数据竞态问题。", "source": "manual"}
+{"id": "cap_008", "role": "运维", "skill": "Kubernetes", "capability": "熟悉 Pod/Deployment/Service/Ingress 声明式编排；能做资源限额、健康探针、滚动发布与回滚，会排查 CrashLoopBackOff 与调度失败。", "source": "manual"}
+{"id": "cap_009", "role": "运维", "skill": "Linux", "capability": "熟悉权限模型与常用命令；能用 top/vmstat/iostat/netstat 定位 CPU、内存、IO、网络瓶颈，会写 Shell 完成巡检与自动化。", "source": "manual"}
+{"id": "cap_010", "role": "前端", "skill": "React", "capability": "理解组件、状态与副作用模型；能正确使用 Hooks（依赖数组、闭包陷阱、性能优化），会做组件拆分与受控表单设计。", "source": "manual"}
+{"id": "cap_011", "role": "前端", "skill": "TypeScript", "capability": "能为核心数据结构定义类型与泛型约束；善用联合类型、类型守卫与工具类型，能在严格模式下消除隐式 any。", "source": "manual"}
+{"id": "cap_012", "role": "前端", "skill": "JavaScript", "capability": "熟悉原型链、闭包、事件循环与 Promise/async-await；能解释 this 绑定、深浅拷贝与常见内存泄漏的成因。", "source": "manual"}
+{"id": "cap_013", "role": "数据分析师", "skill": "SQL", "capability": "能写多表关联、窗口函数与分层聚合查询；会做漏斗、留存与同期群分析，能把业务问题翻译成可验证的指标口径。", "source": "manual"}
+{"id": "cap_014", "role": "数据工程师", "skill": "Spark", "capability": "理解 RDD/DataFrame 惰性求值与宽窄依赖；能定位数据倾斜与 shuffle 开销，会做分区调优与任务稳定性治理。", "source": "manual"}
+{"id": "cap_015", "role": "数据工程师", "skill": "Flink", "capability": "理解事件时间、水位线与状态管理；能实现端到端精确一次语义，会处理乱序数据与反压问题。", "source": "manual"}
+{"id": "cap_016", "role": "算法工程师", "skill": "PyTorch", "capability": "能搭建并训练常见网络结构；理解张量运算、自动求导与 DataLoader，会做学习率调度、过拟合诊断与显存优化。", "source": "manual"}
+{"id": "cap_017", "role": "算法工程师", "skill": "NLP", "capability": "掌握分词、向量化与预训练模型微调；能针对文本分类/信息抽取/检索任务做选型与评估，理解大模型微调与 RAG 的适用边界。", "source": "manual"}
+{"id": "cap_018", "role": "算法工程师", "skill": "机器学习", "capability": "理解偏差方差、正则化与交叉验证；能按任务选择模型与评价指标（AUC/F1/NDCG），会做特征工程与线上线下一致性校验。", "source": "manual"}
+{"id": "cap_019", "role": "产品经理", "skill": "Axure", "capability": "能用 Axure 输出中高保真原型与交互说明；能把需求拆解为页面流程与状态，产出可评审、可开发的交互文档。", "source": "manual"}
+{"id": "cap_020", "role": "产品经理", "skill": "Figma", "capability": "能用 Figma 完成界面设计、组件库与协作标注；能维护设计规范并交付开发所需的切图与标注。", "source": "manual"}
