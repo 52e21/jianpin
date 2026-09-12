@@ -24,6 +24,7 @@ from app.rag.chunker import MAX_CHARS, build_chunks, load_models   # noqa: E402
 from app.rag.retriever import DEFAULT_RRF_K, hybrid_retrieve, keyword_search, rrf_fuse  # noqa: E402
 from app.rag.inject import (MAX_CHARS as CTX_MAX_CHARS, MAX_ITEMS as CTX_MAX_ITEMS,  # noqa: E402
                             capability_context_for_skills, format_capability_context)
+from app.rag.fallback import TfidfVectorStore, get_searcher  # noqa: E402
 
 CHUNKS = build_chunks()
 
@@ -208,8 +209,62 @@ def part_f():
     return ok
 
 
+def part_g():
+    print("\n=== G. R3/R4 兜底实现 + R5 完整混合链路（零依赖也能验）===")
+    ok = True
+
+    # G1 编码确定性与可存储（兜底 TF-IDF）
+    st = TfidfVectorStore()
+    n = st.index_chunks(CHUNKS)
+    print("  兜底向量库写入: %d 条, 词表=%d %s" % (n, st.vectorizer.dim, "✔" if n == len(CHUNKS) else "✘"))
+    ok &= n == len(CHUNKS)
+
+    # G2 检索相关性 + metadata 过滤
+    top = st.search(["Java"], top_k=1)
+    rel_ok = bool(top) and top[0]["chunk"]["metadata"]["skill"] == "Java"
+    print("  [Java] Top1 = %s %s" % (top[0]["chunk"]["metadata"]["skill"] if top else "无",
+                                     "✔" if rel_ok else "✘"))
+    ok &= rel_ok
+    filt = st.search(["任意技能"], top_k=5, where={"skill": "Redis"})
+    f_ok = [x["chunk"]["metadata"]["skill"] for x in filt] == ["Redis"]
+    print("  metadata 过滤(Redis): %d 条 %s" % (len(filt), "✔" if f_ok else "✘"))
+    ok &= f_ok
+
+    # G3 落盘 + 重载可复现
+    path = str(BACKEND / ".rag_db" / "test_run" / "fallback_index.json")
+    st.save(path)
+    again = TfidfVectorStore.load(path)
+    r1 = [x["chunk"]["chunk_id"] for x in st.search(["Spring Boot", "MySQL"], top_k=3)]
+    r2 = [x["chunk"]["chunk_id"] for x in again.search(["Spring Boot", "MySQL"], top_k=3)]
+    rep_ok = r1 == r2 and len(r1) > 0
+    print("  落盘重载后一致: %s (%s) %s" % (rep_ok, r1, "✔" if rep_ok else "✘"))
+    ok &= rep_ok
+
+    # G4 完整混合链路：真实 searcher（Chroma 可用则用 Chroma，否则兜底）+ 关键词 + RRF
+    searcher = get_searcher(CHUNKS)
+    print("  当前向量后端: %s" % searcher.name)
+    out = hybrid_retrieve(["Spring Boot", "MySQL"], CHUNKS,
+                          vector_search=searcher.search, final_k=5)
+    modes_ok = "vector" in out["modes"] and "keyword" in out["modes"]
+    n_ok = 3 <= len(out["results"]) <= 5
+    skills = [r["chunk"]["metadata"]["skill"] for r in out["results"]]
+    rel_ok2 = any(s in ("Spring Boot", "MySQL") for s in skills)
+    print("  RRF 融合: 路数=%s 条数=%d skills=%s %s" % (
+        out["modes"], len(out["results"]), skills, "✔" if (modes_ok and n_ok and rel_ok2) else "✘"))
+    ok &= modes_ok and n_ok and rel_ok2
+
+    # G5 注入（R6 格式层）在完整链路上的表现
+    ctx = capability_context_for_skills(["Spring Boot", "MySQL"], CHUNKS,
+                                       vector_search=searcher.search, top_k=5)
+    ctx_ok = ctx["text"].startswith("岗位能力参考：") and 0 < ctx["chars"] <= CTX_MAX_CHARS + 20
+    print("  注入块: chars=%d ids=%s %s" % (ctx["chars"], ctx["ids"], "✔" if ctx_ok else "✘"))
+    ok &= ctx_ok
+    print("  G 结果: %s" % ("PASS" if ok else "FAIL"))
+    return ok
+
+
 if __name__ == "__main__":
-    a, b, c, d, e, f = part_a(), part_b(), part_c(), part_d(), part_e(), part_f()
-    allok = all([a, b, c, d, e, f])
+    a, b, c, d, e, f, g = part_a(), part_b(), part_c(), part_d(), part_e(), part_f(), part_g()
+    allok = all([a, b, c, d, e, f, g])
     print("\n总结果:", "全部通过 ✅" if allok else "存在失败 ❌")
     sys.exit(0 if allok else 1)
